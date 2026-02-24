@@ -11,7 +11,10 @@ import FeatureCard from "./why/FeatureCard";
 
 export default function WhyChooseSection() {
   return (
-    <div className="bg-card border-y border-border py-20">
+    <section
+      className="bg-card border-y border-border py-20"
+      id="why_choose-section"
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-4xl sm:text-5xl text-foreground tracking-tight mb-4">
@@ -59,6 +62,6 @@ export default function WhyChooseSection() {
           />
         </div>
       </div>
-    </div>
+    </section>
   );
 }

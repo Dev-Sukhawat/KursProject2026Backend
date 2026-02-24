@@ -6,14 +6,13 @@ export default function Header() {
   //   const router = useRouter();
 
   const handleGetStarted = () => {
-    console.log("signup");
-
-    // router.push("/signup");
+    const section = document.getElementById("auth-section");
+    section?.scrollIntoView({ behavior: "smooth", block: "center" });
   };
 
   const handleLearnMore = () => {
-    console.log("Learn");
-    // router.push("/about");
+    const section = document.getElementById("why_choose-section");
+    section?.scrollIntoView({ behavior: "smooth", block: "center" });
   };
 
   return (
