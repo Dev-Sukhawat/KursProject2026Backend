@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { loginUser, registerUser, getUsers } from "../services/authService";
 
 export default function AuthSection() {
   const navigate = useNavigate();
@@ -16,9 +17,9 @@ export default function AuthSection() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const users = JSON.parse(localStorage.getItem("users"));
+    const users = getUsers();
 
-    if (!users) {
+    if (!users || users.length === 0) {
       const defaultUsers = [
         {
           name: "Admin",
@@ -44,35 +45,15 @@ export default function AuthSection() {
     setError("");
 
     setTimeout(() => {
-      const users = JSON.parse(localStorage.getItem("users")) || [];
+      const result = loginUser(loginEmail, loginPassword);
 
-      // Hitta användare
-      const existingUser = users.find((user) => user.email === loginEmail);
-
-      // ❌ Användare finns inte
-      if (!existingUser) {
-        setError("User does not exist. Please register first.");
+      if (!result.success) {
+        setError(result.message);
         setIsLoading(false);
         return;
       }
 
-      // ❌ Fel lösenord
-      if (existingUser.password !== loginPassword) {
-        setError("Incorrect password.");
-        setIsLoading(false);
-        return;
-      }
-
-      // ✅ Spara inloggad användare
-      localStorage.setItem("user", JSON.stringify(existingUser));
-
-      // Redirect beroende på roll
-      if (existingUser.role === "admin") {
-        navigate("/admin");
-      } else {
-        navigate("/user");
-      }
-
+      navigate(result.user.role === "admin" ? "/admin" : "/user");
       setIsLoading(false);
     }, 1000);
   };
@@ -83,36 +64,19 @@ export default function AuthSection() {
     setError("");
 
     setTimeout(() => {
-      const users = JSON.parse(localStorage.getItem("users")) || [];
+      const result = registerUser(
+        registerName,
+        registerEmail,
+        registerPassword,
+      );
 
-      // Kolla om email redan finns
-      const userExists = users.find((user) => user.email === registerEmail);
-
-      if (userExists) {
-        setError("User already exists. Please login.");
+      if (!result.success) {
+        setError(result.message);
         setIsLoading(false);
         return;
       }
 
-      // Skapa ny användare
-      const newUser = {
-        name: registerName,
-        email: registerEmail,
-        password: registerPassword,
-        role: "user", // Alla nya är vanliga users
-      };
-
-      // Lägg till i listan
-      users.push(newUser);
-
-      // Spara tillbaka
-      localStorage.setItem("users", JSON.stringify(users));
-
-      // Logga in direkt efter registrering
-      localStorage.setItem("user", JSON.stringify(newUser));
-
       navigate("/user");
-
       setIsLoading(false);
     }, 1000);
   };

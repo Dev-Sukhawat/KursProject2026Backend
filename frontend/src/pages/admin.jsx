@@ -1,15 +1,10 @@
-import { useNavigate } from "react-router-dom";
+import { logoutUser } from "../components/services/authService";
 
 function Admin() {
-  const navigate = useNavigate();
-  const handleLogout = () => {
-    localStorage.removeItem("user");
-    navigate("/");
-  };
   return (
     <>
       <h1>Du har kommit till Admin</h1>
-      <button onClick={handleLogout}>logout</button>
+      <button onClick={logoutUser}>logout</button>
     </>
   );
 }

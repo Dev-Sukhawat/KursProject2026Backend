@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { getCurrentUser } from "../components/services/authService";
 import Header from "../components/homepage/header";
 import Intro from "../components/homepage/intro";
 import Why from "../components/homepage/why";
@@ -9,10 +10,9 @@ import Footer from "../components/footer/footer";
 function Home() {
   const navigate = useNavigate();
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
+    const user = getCurrentUser();
 
-    if (storedUser) {
-      const user = JSON.parse(storedUser);
+    if (user) {
       navigate(user.role === "admin" ? "/admin" : "/user");
     }
   }, [navigate]);
