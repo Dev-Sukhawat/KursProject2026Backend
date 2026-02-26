@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function AuthSection() {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("login");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -11,16 +13,108 @@ export default function AuthSection() {
   const [registerEmail, setRegisterEmail] = useState("");
   const [registerPassword, setRegisterPassword] = useState("");
 
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const users = JSON.parse(localStorage.getItem("users"));
+
+    if (!users) {
+      const defaultUsers = [
+        {
+          name: "Admin",
+          email: "admin@cowork.com",
+          password: "admin123",
+          role: "admin",
+        },
+        {
+          name: "TestUser",
+          email: "TestUser@cowork.com",
+          password: "TestUser123",
+          role: "user",
+        },
+      ];
+
+      localStorage.setItem("users", JSON.stringify(defaultUsers));
+    }
+  }, []);
+
   const handleLogin = (e) => {
     e.preventDefault();
     setIsLoading(true);
-    setTimeout(() => setIsLoading(false), 1000);
+    setError("");
+
+    setTimeout(() => {
+      const users = JSON.parse(localStorage.getItem("users")) || [];
+
+      // Hitta användare
+      const existingUser = users.find((user) => user.email === loginEmail);
+
+      // ❌ Användare finns inte
+      if (!existingUser) {
+        setError("User does not exist. Please register first.");
+        setIsLoading(false);
+        return;
+      }
+
+      // ❌ Fel lösenord
+      if (existingUser.password !== loginPassword) {
+        setError("Incorrect password.");
+        setIsLoading(false);
+        return;
+      }
+
+      // ✅ Spara inloggad användare
+      localStorage.setItem("user", JSON.stringify(existingUser));
+
+      // Redirect beroende på roll
+      if (existingUser.role === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/user");
+      }
+
+      setIsLoading(false);
+    }, 1000);
   };
 
   const handleRegister = (e) => {
     e.preventDefault();
     setIsLoading(true);
-    setTimeout(() => setIsLoading(false), 1000);
+    setError("");
+
+    setTimeout(() => {
+      const users = JSON.parse(localStorage.getItem("users")) || [];
+
+      // Kolla om email redan finns
+      const userExists = users.find((user) => user.email === registerEmail);
+
+      if (userExists) {
+        setError("User already exists. Please login.");
+        setIsLoading(false);
+        return;
+      }
+
+      // Skapa ny användare
+      const newUser = {
+        name: registerName,
+        email: registerEmail,
+        password: registerPassword,
+        role: "user", // Alla nya är vanliga users
+      };
+
+      // Lägg till i listan
+      users.push(newUser);
+
+      // Spara tillbaka
+      localStorage.setItem("users", JSON.stringify(users));
+
+      // Logga in direkt efter registrering
+      localStorage.setItem("user", JSON.stringify(newUser));
+
+      navigate("/user");
+
+      setIsLoading(false);
+    }, 1000);
   };
 
   return (
@@ -106,6 +200,11 @@ export default function AuthSection() {
                     />
                   </div>
 
+                  {/* ✅ ERROR MESSAGE */}
+                  {error && (
+                    <p className="text-red-500 text-sm text-center">{error}</p>
+                  )}
+
                   <button
                     type="submit"
                     disabled={isLoading}
@@ -175,6 +274,11 @@ export default function AuthSection() {
                       className="w-full rounded-md bg-gray-100 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary"
                     />
                   </div>
+
+                  {/* ✅ ERROR MESSAGE */}
+                  {error && (
+                    <p className="text-red-500 text-sm text-center">{error}</p>
+                  )}
 
                   <button
                     type="submit"
