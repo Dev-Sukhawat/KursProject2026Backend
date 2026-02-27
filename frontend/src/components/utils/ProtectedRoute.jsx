@@ -1,7 +1,7 @@
 import { Navigate } from "react-router-dom";
 
 export default function ProtectedRoute({ children, role }) {
-  const storedUser = localStorage.getItem("user");
+  const storedUser = localStorage.getItem("ActiveUser");
 
   // ❌ Inte inloggad alls
   if (!storedUser) {

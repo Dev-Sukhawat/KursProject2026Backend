@@ -10,13 +10,13 @@ export function saveUsers(users) {
 
 // Logout funktion
 export function logoutUser() {
-    localStorage.removeItem("user");
+    localStorage.removeItem("ActiveUser");
     window.location.href = "/";
 }
 
 // Get current logged in user
 export function getCurrentUser() {
-    return JSON.parse(localStorage.getItem("user"));
+    return JSON.parse(localStorage.getItem("ActiveUser")) || null;
 }
 
 // Login funktion
@@ -33,7 +33,7 @@ export function loginUser(email, password) {
         return { success: false, message: "Incorrect password." };
     }
 
-    localStorage.setItem("user", JSON.stringify(existingUser));
+    localStorage.setItem("ActiveUser", JSON.stringify(existingUser));
 
     return { success: true, user: existingUser };
 }
