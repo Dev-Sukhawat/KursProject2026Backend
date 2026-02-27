@@ -17,10 +17,7 @@ export default function VideoContainer() {
             controls
             poster="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1920&q=80"
           >
-            <source
-              src="https://storage.coverr.co/videos/coverr-coworking-space-with-people-working-6458/preview?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBJZCI6Ijg3NjdFMzIzRjlGQzEzN0E4QTAyIiwiaWF0IjoxNjI1MTQ5NjE3fQ.M0mLwz5XxCOhZ14JNKLMPMcpLq-g3XR0G7kVyMp5Hpw"
-              type="video/mp4"
-            />
+            <source src="../../../assets/cowork-demo.mp4" type="video/mp4" />
             Your browser does not support the video tag.
           </video>
         </div>
