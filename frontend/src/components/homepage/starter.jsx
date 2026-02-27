@@ -143,6 +143,7 @@ export default function AuthSection() {
                     <input
                       type="email"
                       placeholder="you@example.com"
+                      autoComplete="email"
                       value={loginEmail}
                       onChange={(e) => setLoginEmail(e.target.value)}
                       required
@@ -157,6 +158,7 @@ export default function AuthSection() {
                     <input
                       type="password"
                       placeholder="••••••••"
+                      autoComplete="current-password"
                       value={loginPassword}
                       onChange={(e) => setLoginPassword(e.target.value)}
                       required
@@ -203,6 +205,7 @@ export default function AuthSection() {
                     <input
                       type="text"
                       placeholder="John Doe"
+                      autoComplete="name"
                       value={registerName}
                       onChange={(e) => setRegisterName(e.target.value)}
                       required
@@ -217,6 +220,7 @@ export default function AuthSection() {
                     <input
                       type="email"
                       placeholder="you@example.com"
+                      autoComplete="email"
                       value={registerEmail}
                       onChange={(e) => setRegisterEmail(e.target.value)}
                       required
@@ -231,6 +235,7 @@ export default function AuthSection() {
                     <input
                       type="password"
                       placeholder="••••••••"
+                      autoComplete="new-password"
                       value={registerPassword}
                       onChange={(e) => setRegisterPassword(e.target.value)}
                       required
