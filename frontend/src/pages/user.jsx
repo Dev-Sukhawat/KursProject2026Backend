@@ -1,10 +1,11 @@
-import { logoutUser } from "../components/services/authService";
+import Navbar from "../components/navbar/navbar";
+import Footer from "../components/footer/footer";
 
 function User() {
   return (
     <>
-      <h1>Du har kommit till user</h1>
-      <button onClick={logoutUser}>logout</button>
+      <Navbar />
+      <Footer />
     </>
   );
 }
