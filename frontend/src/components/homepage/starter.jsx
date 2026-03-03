@@ -28,6 +28,12 @@ export default function AuthSection() {
           role: "admin",
         },
         {
+          name: "Bob",
+          email: "bob@cowork.com",
+          password: "bob123",
+          role: "admin",
+        },
+        {
           name: "TestUser",
           email: "TestUser@cowork.com",
           password: "TestUser123",

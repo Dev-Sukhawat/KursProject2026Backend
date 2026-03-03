@@ -27,7 +27,7 @@ export default function Navbar({ children }) {
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       {/* Header */}
-      <header className="bg-white border-b sticky top-0 z-10 shadow-sm">
+      <nav className="bg-white border-b sticky top-0 z-10 shadow-sm">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex justify-between items-center h-16">
             {/* Logo + Navigation */}
@@ -93,11 +93,15 @@ export default function Navbar({ children }) {
             {/* User Info + Logout */}
             <div className="flex items-center gap-4">
               <div className="text-sm hidden sm:block">
-                {user.name}
-                {isAdmin && (
-                  <span className="ml-2 text-blue-600 font-medium">
-                    (Admin)
-                  </span>
+                {isAdmin ? (
+                  <>
+                    Admin:
+                    <span className="ml-2 text-blue-600 font-medium">
+                      ({user.name} )
+                    </span>
+                  </>
+                ) : (
+                  <span className="ml-2 font-medium">{user.name}</span>
                 )}
               </div>
 
@@ -111,7 +115,7 @@ export default function Navbar({ children }) {
             </div>
           </div>
         </div>
-      </header>
+      </nav>
 
       <main className="flex-1">{children}</main>
     </div>

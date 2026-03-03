@@ -1,13 +1,11 @@
 import Navbar from "../components/navbar/navbar";
 import Footer from "../components/footer/footer";
 
-function User() {
+export default function RoomManagement() {
   return (
     <>
-      <Navbar />
+      <Navbar></Navbar>
       <Footer />
     </>
   );
 }
-
-export default User;
