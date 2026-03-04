@@ -1,13 +1,20 @@
-import StatsCard from "../../ui/StatsCard";
+import StatsCard from "../../ui/dashborad/StatsCard";
 import { Building2, Calendar, Users } from "lucide-react";
 
-export default function Statscard() {
-  const totalRooms = 100;
-  const romsWR = 70;
-  const romsCR = 30;
-  const availableRooms = 85;
-  const activeBookings = 25;
-  const upcomingBookings = 10;
+export default function Statscard({rooms, bookings}) {
+  const totalRooms = rooms.length;
+  const availableRooms = rooms.filter(
+    (room) => room.available
+  ).length;
+  const activeBookings = bookings.filter(
+    (booking) => booking.status === "active"
+  ).length;
+  const upcomingBookings = bookings.filter(
+    b => b.status === 'active' && b.startDate >= new Date()
+  ).length;
+  console.log(bookings.filter(
+    b => b.status === 'active' && b.startDate >= new Date()
+  ));
   return (
     <>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -27,16 +34,14 @@ export default function Statscard() {
 
         <StatsCard
           title="Workspace Rooms"
-          //   value={rooms.filter((r) => r.type === "workspace").length}
-          value={romsWR}
+            value={rooms.filter((r) => r.type === "workspace").length}
           subtitle="Individual workspaces"
           icon={Building2}
         />
 
         <StatsCard
           title="Conference Rooms"
-          //   value={rooms.filter((r) => r.type === "conference").length}
-          value={romsCR}
+            value={rooms.filter((r) => r.type === "conference").length}
           subtitle="Meeting spaces"
           icon={Users}
         />
