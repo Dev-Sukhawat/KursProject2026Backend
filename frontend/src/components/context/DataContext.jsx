@@ -12,7 +12,8 @@ export const useData = () => {
 };
 
 // Initial mock data
-const initialRooms = [
+// Initial mock data
+export const initialRooms = [
   { id: "1", name: "Focus Room A", type: "workspace", capacity: 1, available: true },
   { id: "2", name: "Focus Room B", type: "workspace", capacity: 1, available: true },
   { id: "3", name: "Hot Desk 1", type: "workspace", capacity: 1, available: true },
@@ -23,127 +24,139 @@ const initialRooms = [
   { id: "8", name: "Board Room", type: "conference", capacity: 16, available: true },
 ];
 
-const initialBookings = [    {
-      id: 1,
-      userId: 1,
-      userName: "John Doe",
-      roomId: 1,
-      roomName: "Conference Room A",
-      startDate: idagMedTid(10, 0), // Idag kl. 10:00
-      endDate: idagMedTid(18, 0), // Idag kl. 18:00
-      status: "active",
-    },
-    {
-      id: 2,
-      userId: 2,
-      userName: "Jane Smith",
-      roomId: 5,
-      roomName: "Meeting Room B",
-      startDate: new Date(Date.now() - 86400000),
-      endDate: new Date(Date.now() + 86400000),
-      status: 'active',
-    },
-    {
-      id: 3,
-      userId: 1,
-      userName: 'Emma Anderson',
-      roomId: '3',
-      roomName: 'Hot Desk 1',
-      startDate: new Date(2026, 2, 5, 8, 0), // Tomorrow, March 5, 8:00 AM
-      endDate: new Date(2026, 2, 5, 17, 0), // Tomorrow, 5:00 PM
-      status: 'active',
-  },
+export const initialBookings = [
   {
-    id: 4,
-    userId: 2,
-    userName: 'Lucas Nielsen',
-    roomId: '6',
-    roomName: 'Conference Room B',
-    startDate: new Date(2026, 2, 5, 10, 0), // Tomorrow, 10:00 AM
-    endDate: new Date(2026, 2, 5, 12, 0), // Tomorrow, 12:00 PM
-    status: 'active',
+    id: "1",
+    userId: "1",
+    userName: "John Doe",
+    roomId: "5",
+    roomName: "Conference Room A",
+    startDate: idagMedTid(10,0),
+    endDate: idagMedTid(18,0),
+    status: "active",
   },
+
   {
-    id: 5,
-    userId: 3,
-    userName: 'Sofia Larsson',
-    roomId: '7',
-    roomName: 'Meeting Room Small',
-    startDate: new Date(2026, 2, 6, 13, 0), // March 6, 1:00 PM
-    endDate: new Date(2026, 2, 6, 15, 0), // March 6, 3:00 PM
-    status: 'active',
+    id: "2",
+    userId: "2",
+    userName: "Jane Smith",
+    roomId: "6",
+    roomName: "Conference Room B",
+    startDate: new Date(Date.now() - 86400000),
+    endDate: new Date(Date.now() + 86400000),
+    status: "active",
   },
+
   {
-    id: 6,
-    userId: 1,
-    userName: 'Emma Anderson',
-    roomId: '2',
-    roomName: 'Focus Room B',
-    startDate: new Date(2026, 2, 7, 9, 0), // March 7, 9:00 AM
-    endDate: new Date(2026, 2, 7, 11, 0), // March 7, 11:00 AM
-    status: 'active',
+    id: "3",
+    userId: "3",
+    userName: "Emma Anderson",
+    roomId: "3",
+    roomName: "Hot Desk 1",
+    startDate: new Date(2026, 2, 5, 8, 0),
+    endDate: new Date(2026, 2, 5, 17, 0),
+    status: "active",
   },
+
   {
-    id: 7,
-    userId: 2,
-    userName: 'Lucas Nielsen',
-    roomId: '8',
-    roomName: 'Board Room',
-    startDate: new Date(2026, 2, 9, 14, 0), // March 9, 2:00 PM
-    endDate: new Date(2026, 2, 9, 17, 0), // March 9, 5:00 PM
-    status: 'active',
+    id: "4",
+    userId: "4",
+    userName: "Lucas Nielsen",
+    roomId: "6",
+    roomName: "Conference Room B",
+    startDate: new Date(2026, 2, 5, 10, 0),
+    endDate: new Date(2026, 2, 5, 12, 0),
+    status: "active",
   },
+
   {
-    id: 8,
-    userId: 1,
-    userName: 'Emma Anderson',
-    roomId: '4',
-    roomName: 'Hot Desk 2',
-    startDate: new Date(2026, 2, 10, 8, 0), // March 10, 8:00 AM
-    endDate: new Date(2026, 2, 10, 12, 0), // March 10, 12:00 PM
-    status: 'active',
+    id: "5",
+    userId: "5",
+    userName: "Sofia Larsson",
+    roomId: "7",
+    roomName: "Meeting Room Small",
+    startDate: new Date(2026, 2, 6, 13, 0),
+    endDate: new Date(2026, 2, 6, 15, 0),
+    status: "active",
   },
+
   {
-    id: 9,
-    userId: 3,
-    userName: 'Sofia Larsson',
-    roomId: '5',
-    roomName: 'Conference Room A',
-    startDate: new Date(2026, 2, 11, 10, 0), // March 11, 10:00 AM
-    endDate: new Date(2026, 2, 11, 12, 30), // March 11, 12:30 PM
-    status: 'active',
+    id: "6",
+    userId: "3",
+    userName: "Emma Anderson",
+    roomId: "2",
+    roomName: "Focus Room B",
+    startDate: new Date(2026, 2, 7, 9, 0),
+    endDate: new Date(2026, 2, 7, 11, 0),
+    status: "active",
   },
+
   {
-    id: 10,
-    userId: 1,
-    userName: 'Emma Anderson',
-    roomId: '1',
-    roomName: 'Focus Room A',
-    startDate: new Date(2026, 2, 2, 14, 0), // Past booking: March 2, 2:00 PM
-    endDate: new Date(2026, 2, 2, 16, 0), // March 2, 4:00 PM
-    status: 'active',
+    id: "7",
+    userId: "4",
+    userName: "Lucas Nielsen",
+    roomId: "8",
+    roomName: "Board Room",
+    startDate: new Date(2026, 2, 9, 14, 0),
+    endDate: new Date(2026, 2, 9, 17, 0),
+    status: "active",
   },
+
   {
-    id: 11,
-    userId: 2,
-    userName: 'Lucas Nielsen',
-    roomId: '7',
-    roomName: 'Meeting Room Small',
-    startDate: new Date(2026, 2, 1, 9, 0), // Past booking: March 1, 9:00 AM
-    endDate: new Date(2026, 2, 1, 11, 0), // March 1, 11:00 AM
-    status: 'cancelled',
+    id: "8",
+    userId: "3",
+    userName: "Emma Anderson",
+    roomId: "4",
+    roomName: "Hot Desk 2",
+    startDate: new Date(2026, 2, 10, 8, 0),
+    endDate: new Date(2026, 2, 10, 12, 0),
+    status: "active",
   },
+
   {
-    id: 12,
-    userId: 3,
-    userName: 'Sofia Larsson',
-    roomId: '6',
-    roomName: 'Conference Room B',
-    startDate: new Date(2026, 2, 12, 15, 0), // March 12, 3:00 PM
-    endDate: new Date(2026, 2, 12, 18, 0), // March 12, 6:00 PM
-    status: 'active',
+    id: "9",
+    userId: "5",
+    userName: "Sofia Larsson",
+    roomId: "5",
+    roomName: "Conference Room A",
+    startDate: new Date(2026, 2, 11, 10, 0),
+    endDate: new Date(2026, 2, 11, 12, 30),
+    status: "active",
   },
-  ];
+
+  {
+    id: "10",
+    userId: "3",
+    userName: "Emma Anderson",
+    roomId: "1",
+    roomName: "Focus Room A",
+    startDate: new Date(2026, 2, 2, 14, 0),
+    endDate: new Date(2026, 2, 2, 16, 0),
+    status: "active",
+  },
+
+  {
+    id: "11",
+    userId: "4",
+    userName: "Lucas Nielsen",
+    roomId: "7",
+    roomName: "Meeting Room Small",
+    startDate: new Date(2026, 2, 1, 9, 0),
+    endDate: new Date(2026, 2, 1, 11, 0),
+    status: "cancelled",
+  },
+
+  {
+    id: "12",
+    userId: "5",
+    userName: "Sofia Larsson",
+    roomId: "6",
+    roomName: "Conference Room B",
+    startDate: new Date(2026, 2, 12, 15, 0),
+    endDate: new Date(2026, 2, 12, 18, 0),
+    status: "active",
+  },
+];
 
 export const DataProvider = ({ children }) => {
   const [rooms, setRooms] = useState(initialRooms);
