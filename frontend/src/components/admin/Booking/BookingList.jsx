@@ -39,7 +39,7 @@ export const BookingList = ({ bookings, onDeleteClick }) => {
                     {isUpcoming ? 'Upcoming' : isPast ? 'Completed' : 'Active'}
                   </span>
                 </div>
-                <p className="text-xs text-gray-400 font-mono">ID: {booking.id.slice(0, 12)}</p>
+                <p className="text-xs text-gray-400 font-mono">BookingID: {booking.id.slice(0, 12)}</p>
               </div>
               
               <button
