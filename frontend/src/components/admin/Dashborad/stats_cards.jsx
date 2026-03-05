@@ -12,9 +12,6 @@ export default function Statscard({rooms, bookings}) {
   const upcomingBookings = bookings.filter(
     b => b.status === 'active' && b.startDate >= new Date()
   ).length;
-  console.log(bookings.filter(
-    b => b.status === 'active' && b.startDate >= new Date()
-  ));
   return (
     <>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">

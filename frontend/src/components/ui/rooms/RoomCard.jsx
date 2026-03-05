@@ -5,8 +5,7 @@ export default function RoomCard({
   onEdit,
   onDelete,
 }) {
-  console.log(room);
-  
+
   return (
     <div className="bg-white border rounded-xl shadow-sm p-5">
       {/* Header */}
