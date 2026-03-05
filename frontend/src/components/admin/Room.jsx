@@ -3,12 +3,15 @@ import { useData } from "../context/DataContext";
 import Header from "./Room/header";
 import RoomGrid from "../ui/rooms/RoomGrid";
 import RoomFormModal from "../ui/rooms/RoomFormModal";
+import { ConfirmationModal } from "../ui/ConfirmationModal";
 
 export default function Room() {
   const { rooms, addRoom, updateRoom, deleteRoom } = useData();
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingRoom, setEditingRoom] = useState(null);
+   const [isModalOpen, setIsModalOpen] = useState(false);
+   const [roomsToDelete, setRoomsToDelete] = useState(null)
 
   const [formName, setFormName] = useState("");
   const [formType, setFormType] = useState("workspace");
@@ -61,8 +64,17 @@ export default function Room() {
   };
 
   // DELETE
-  const handleDelete = (id) => {
-    deleteRoom(id);
+  const handleDeleteTrigger = (id) => {
+    setRoomsToDelete(id);
+    setIsModalOpen(true)
+  };
+
+  const handleConfirmDelete = () => {
+    if (roomsToDelete) {
+      deleteRoom(roomsToDelete);
+      setIsModalOpen(false);
+      setRoomsToDelete(null)
+    }
   };
 
   return (
@@ -72,7 +84,7 @@ export default function Room() {
       <RoomGrid
         rooms={rooms}
         onEdit={handleOpenDialog}
-        onDelete={handleDelete}
+        onDelete={handleDeleteTrigger}
         onAddFirst={() => handleOpenDialog()}
       />
 
@@ -89,6 +101,16 @@ export default function Room() {
         setFormCapacity={setFormCapacity}
         formAvailable={formAvailable}
         setFormAvailable={setFormAvailable}
+      />
+
+      <ConfirmationModal
+      isOpen={isModalOpen}
+      onClose={() => setIsModalOpen(false)}
+      onConfirm={handleConfirmDelete}
+      title="Delete Room?"
+      description="Are you sure you want to delete this room? This action cannot be undone."
+      confirmText="Yes, Delete Room"
+      cancelText="Keep Room"
       />
     </div>
   );
