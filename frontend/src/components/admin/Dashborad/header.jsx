@@ -1,6 +1,3 @@
-import { getCurrentUser } from "../../services/authService";
-
-const user = getCurrentUser();
 export default function AdminHeader() {
   return (
     <>

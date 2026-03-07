@@ -6,7 +6,7 @@ export default function AutoTopScroller() {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, [pathname]); // Körs varje gång URL:en ändras
+  }, [pathname]);
 
   return null;
 }

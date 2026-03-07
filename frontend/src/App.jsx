@@ -1,10 +1,10 @@
 import { Routes, Route } from "react-router-dom";
 import Home from "./pages/LandingPage";
-import Admin from "./pages/AdminDashboard";
-import User from "./pages/UserDashboard";
-import RoomManagement from "./pages/RoomManagement";
-import UserManagement from "./pages/UserManagement";
-import BookingManagement from "./pages/BookingManagement"
+import Admin from "./pages/admin/AdminDashboard";
+import RoomManagement from "./pages/admin/RoomManagement";
+import UserManagement from "./pages/admin/UserManagement";
+import BookingManagement from "./pages/admin/BookingManagement";
+import User from "./pages/user/UserDashboard";
 import ProtectedRoute from "./components/utils/ProtectedRoute";
 import  {DataProvider} from "./components/context/DataContext";
 import AutoTopScroller from "./components/services/AutoTopScroller";

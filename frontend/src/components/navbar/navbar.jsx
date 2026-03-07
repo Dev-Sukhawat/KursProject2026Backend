@@ -35,7 +35,7 @@ export default function Navbar({ children }) {
             <div className="flex items-center gap-8">
               <h1
                 onClick={() => navigate(isAdmin ? "/admin" : "/user")}
-                className="text-xl font-semibold cursor-pointer"
+                className="text-xl text-primary font-semibold cursor-pointer"
               >
                 CoWork
               </h1>
@@ -103,13 +103,13 @@ export default function Navbar({ children }) {
                     </span>
                   </>
                 ) : (
-                  <span className="ml-2 font-medium">{user.name}</span>
+                  <span className="ml-2 font-medium ">{user.name}</span>
                 )}
               </div>
 
               <button
                 onClick={handleLogout}
-                className="flex items-center gap-2 px-3 py-1.5 border rounded-md cursor-pointer hover:bg-gray-100 transition "
+                className="flex items-center gap-2 px-3 py-1.5 border border-border rounded-md text-destructive cursor-pointer hover:border-destructive/50 hover:bg-destructive/5 transition "
               >
                 <LogOut size={16} />
                 Logout
