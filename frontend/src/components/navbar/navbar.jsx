@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import NavButton from "../ui/navbar/NavButton";
 import { getCurrentUser, logoutUser } from "../services/authService";
 import {
   LogOut,
@@ -39,12 +40,13 @@ export default function Navbar({ children }) {
                 CoWork
               </h1>
 
-              <nav className="hidden md:flex gap-2">
+              <nav className="hidden md:flex gap-2 ">
                 {isAdmin ? (
                   <>
                     <NavButton
                       icon={<LayoutDashboard size={16} />}
                       label="Dashboard"
+                      className="cursor-pointer"
                       onClick={() => navigate("/admin")}
                     />
                     <NavButton
@@ -107,7 +109,7 @@ export default function Navbar({ children }) {
 
               <button
                 onClick={handleLogout}
-                className="flex items-center gap-2 px-3 py-1.5 border rounded-md hover:bg-gray-100 transition"
+                className="flex items-center gap-2 px-3 py-1.5 border rounded-md cursor-pointer hover:bg-gray-100 transition "
               >
                 <LogOut size={16} />
                 Logout
@@ -119,17 +121,5 @@ export default function Navbar({ children }) {
 
       <main className="flex-1">{children}</main>
     </div>
-  );
-}
-
-function NavButton({ icon, label, onClick }) {
-  return (
-    <button
-      onClick={onClick}
-      className="flex items-center gap-2 px-3 py-1.5 rounded-md hover:bg-gray-100 transition text-sm"
-    >
-      {icon}
-      {label}
-    </button>
   );
 }
