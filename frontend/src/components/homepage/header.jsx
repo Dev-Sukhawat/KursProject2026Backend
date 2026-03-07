@@ -37,10 +37,10 @@ export default function Header() {
             </div>
 
             {/* Buttons */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4 ">
               <button
                 onClick={handleGetStarted}
-                className="inline-flex items-center justify-center gap-2 rounded-lg border bg-primary px-8 py-3 text-primary-foreground text-lg font-medium hover:opacity-90 transition"
+                className="inline-flex items-center justify-center gap-2 rounded-lg border bg-primary px-8 py-3 text-primary-foreground text-lg font-medium hover:opacity-90 transition cursor-pointer"
               >
                 Get Started
                 <ArrowRight className="size-4" />
@@ -48,7 +48,7 @@ export default function Header() {
 
               <button
                 onClick={handleLearnMore}
-                className="inline-flex items-center justify-center rounded-lg border border-border bg-background px-8 py-3 text-lg font-medium hover:bg-muted transition"
+                className="inline-flex items-center justify-center rounded-lg border border-border bg-background px-8 py-3 text-lg font-medium hover:bg-muted transition cursor-pointer"
               >
                 Learn More
               </button>

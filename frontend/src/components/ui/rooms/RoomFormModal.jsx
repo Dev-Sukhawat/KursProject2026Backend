@@ -34,7 +34,7 @@ export default function RoomFormModal({
           <select
             value={formType}
             onChange={(e) => setFormType(e.target.value)}
-            className="w-full border rounded-lg px-3 py-2"
+            className="w-full border rounded-lg px-3 py-2 cursor-pointer"
           >
             <option value="workspace">Workspace</option>
             <option value="conference">Conference Room</option>
@@ -49,13 +49,11 @@ export default function RoomFormModal({
             required
           />
 
-          <label className="flex items-center gap-2">
+          <label className="flex items-center gap-2 cursor-pointer">
             <input
               type="checkbox"
               checked={formAvailable}
-              onChange={(e) =>
-                setFormAvailable(e.target.checked)
-              }
+              onChange={(e) => setFormAvailable(e.target.checked)}
             />
             Available for Booking
           </label>
@@ -64,14 +62,14 @@ export default function RoomFormModal({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 border rounded-lg"
+              className="px-4 py-2 border rounded-lg cursor-pointer"
             >
               Cancel
             </button>
 
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg"
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg cursor-pointer"
             >
               {editingRoom ? "Update" : "Create"}
             </button>

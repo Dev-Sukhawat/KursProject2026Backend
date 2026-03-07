@@ -110,7 +110,7 @@ export default function AuthSection() {
           <div className="bg-gray-200 p-1 rounded-full grid grid-cols-2 mb-6">
             <button
               onClick={() => setActiveTab("login")}
-              className={`py-2 text-sm font-medium rounded-full transition ${
+              className={`py-2 text-sm font-medium rounded-full transition cursor-pointer ${
                 activeTab === "login"
                   ? "bg-white shadow text-black"
                   : "text-gray-600"
@@ -120,7 +120,7 @@ export default function AuthSection() {
             </button>
             <button
               onClick={() => setActiveTab("register")}
-              className={`py-2 text-sm font-medium rounded-full transition ${
+              className={`py-2 text-sm font-medium rounded-full transition cursor-pointer ${
                 activeTab === "register"
                   ? "bg-white shadow text-black"
                   : "text-gray-600"
@@ -180,7 +180,7 @@ export default function AuthSection() {
                   <button
                     type="submit"
                     disabled={isLoading}
-                    className="w-full bg-primary hover:bg-primary/90 text-white py-2 rounded-md font-medium transition"
+                    className="w-full bg-primary hover:bg-primary/90 text-white py-2 rounded-md font-medium transition cursor-pointer"
                   >
                     {isLoading ? "Logging in..." : "Login"}
                   </button>
@@ -258,7 +258,7 @@ export default function AuthSection() {
                   <button
                     type="submit"
                     disabled={isLoading}
-                    className="w-full bg-primary hover:bg-primary/90 text-white py-2 rounded-md font-medium transition"
+                    className="w-full bg-primary hover:bg-primary/90 text-white py-2 rounded-md font-medium transition cursor-pointer"
                   >
                     {isLoading ? "Creating account..." : "Create Account"}
                   </button>
