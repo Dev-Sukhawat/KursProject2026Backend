@@ -1,10 +1,7 @@
 import { ArrowRight } from "lucide-react";
 import LogoIMG from "../../assets/logov2.1_img.png";
-// import { useRouter } from "../../assets/";
 
 export default function Header() {
-  //   const router = useRouter();
-
   const handleGetStarted = () => {
     const section = document.getElementById("auth-section");
     section?.scrollIntoView({ behavior: "smooth", block: "center" });

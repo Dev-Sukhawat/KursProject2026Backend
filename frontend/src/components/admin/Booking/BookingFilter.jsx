@@ -8,17 +8,20 @@ export const BookingFilter = ({ statusFilter, setStatusFilter }) => {
         <Filter className="w-5 h-5 text-gray-500" />
         <h2 className="text-lg font-semibold text-gray-900">Filter Bookings</h2>
       </div>
-      
+
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="w-full max-w-xs space-y-2">
-          <label htmlFor="status-filter" className="text-sm font-medium text-gray-700">
+          <label
+            htmlFor="status-filter"
+            className="text-sm font-medium text-secondary-foreground"
+          >
             Status
           </label>
           <select
             id="status-filter"
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="w-full p-2 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+            className="w-full p-2 bg-gray-50 border border-gray-300 rounded-lg cursor-pointer focus:ring-2 focus:ring-blue-500 outline-none "
           >
             <option value="all">All Bookings</option>
             <option value="active">Active</option>
