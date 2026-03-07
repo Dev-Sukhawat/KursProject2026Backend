@@ -12,7 +12,6 @@ export const useData = () => {
 };
 
 // Initial mock data
-// Initial mock data
 export const initialRooms = [
   { id: "1", name: "Focus Room A", type: "workspace", capacity: 1, available: true },
   { id: "2", name: "Focus Room B", type: "workspace", capacity: 1, available: true },
