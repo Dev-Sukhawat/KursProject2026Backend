@@ -18,7 +18,7 @@ export default function QuickActions() {
           title="View All Bookings"
           description="Manage your current and past bookings"
           icon={Calendar}
-          onClick={() => navigate("/my_bookings")}
+          onClick={() => navigate("/my-bookings")}
         />
       </div>
     </>
