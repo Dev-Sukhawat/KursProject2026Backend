@@ -28,7 +28,7 @@ export default function Footer() {
               </li>
               <li>
                 <a
-                  href="/dashboard"
+                  href="/user"
                   className="hover:text-primary transition-colors"
                 >
                   Dashboard
@@ -36,7 +36,7 @@ export default function Footer() {
               </li>
               <li>
                 <a
-                  href="/rooms"
+                  href="/book"
                   className="hover:text-primary transition-colors"
                 >
                   Browse Rooms
