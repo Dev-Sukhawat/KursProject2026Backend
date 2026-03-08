@@ -44,7 +44,7 @@ export default function Footer() {
               </li>
               <li>
                 <a
-                  href="/bookings"
+                  href="/my-bookings"
                   className="hover:text-primary transition-colors"
                 >
                   My Bookings
