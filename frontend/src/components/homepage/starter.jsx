@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { defaultUsers } from "../context/DataContext";
 import { loginUser, registerUser, getUsers } from "../services/authService";
 
 export default function AuthSection() {
@@ -17,30 +18,9 @@ export default function AuthSection() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const users = getUsers();
+    const existingUsers = getUsers();
 
-    if (!users || users.length === 0) {
-      const defaultUsers = [
-        {
-          name: "Admin",
-          email: "admin@cowork.com",
-          password: "admin123",
-          role: "admin",
-        },
-        {
-          name: "Bob",
-          email: "bob@cowork.com",
-          password: "bob123",
-          role: "admin",
-        },
-        {
-          name: "TestUser",
-          email: "TestUser@cowork.com",
-          password: "TestUser123",
-          role: "user",
-        },
-      ];
-
+    if (!existingUsers || existingUsers.length === 0) {
       localStorage.setItem("users", JSON.stringify(defaultUsers));
     }
   }, []);

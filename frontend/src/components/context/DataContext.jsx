@@ -12,6 +12,30 @@ export const useData = () => {
 };
 
 // Initial mock data
+export const defaultUsers = [
+  {
+    id: "9",
+    name: "Admin",
+    email: "admin@cowork.com",
+    password: "admin123",
+    role: "admin",
+  },
+  {
+    id: "8",
+    name: "Bob",
+    email: "bob@cowork.com",
+    password: "bob123",
+    role: "admin",
+  },
+  {
+    id: "7",
+    name: "TestUser",
+    email: "TestUser@cowork.com",
+    password: "TestUser123",
+    role: "user",
+  },
+];
+
 export const initialRooms = [
   { id: "1", name: "Focus Room A", type: "workspace", capacity: 1, available: true },
   { id: "2", name: "Focus Room B", type: "workspace", capacity: 1, available: true },
