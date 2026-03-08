@@ -5,15 +5,16 @@ import RoomManagement from "./pages/admin/RoomManagement";
 import UserManagement from "./pages/admin/UserManagement";
 import BookingManagement from "./pages/admin/BookingManagement";
 import User from "./pages/user/UserDashboard";
+import MyBooking from "./pages/user/MyBookingsPage";
 import ProtectedRoute from "./components/utils/ProtectedRoute";
-import  {DataProvider} from "./components/context/DataContext";
+import { DataProvider } from "./components/context/DataContext";
 import AutoTopScroller from "./components/services/AutoTopScroller";
 
 function App() {
   return (
     <DataProvider>
-      <AutoTopScroller/>
-    <Routes>
+      <AutoTopScroller />
+      <Routes>
         <Route path="/" element={<Home />} />
         <Route
           path="/admin"
@@ -52,6 +53,14 @@ function App() {
           element={
             <ProtectedRoute role="user">
               <User />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/my-bookings"
+          element={
+            <ProtectedRoute role="user">
+              <MyBooking />
             </ProtectedRoute>
           }
         />
