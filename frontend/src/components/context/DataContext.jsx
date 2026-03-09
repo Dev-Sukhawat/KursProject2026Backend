@@ -34,6 +34,13 @@ export const defaultUsers = [
     password: "TestUser123",
     role: "user",
   },
+  {
+    id: "5",
+    name: "Sofia Larsson",
+    email: "sofia.larsson@cowork.com",
+    password: "sofia123",
+    role: "user",
+  },
 ];
 
 export const initialRooms = [
