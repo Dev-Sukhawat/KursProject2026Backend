@@ -16,8 +16,12 @@ import { useEffect } from "react";
 
 function App() {
   const fetchApi = async () => {
-    const response = await axios.get("http://localhost:8080/api");
-    console.log(response.data.bookings);
+    try {
+      const response = await axios.get("/api");
+      console.log(response.data.bookings);
+    } catch (error) {
+      console.error("API error:", error);
+    }
   };
 
   useEffect(() => {
