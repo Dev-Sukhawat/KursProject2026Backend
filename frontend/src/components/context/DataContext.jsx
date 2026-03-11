@@ -44,14 +44,90 @@ export const defaultUsers = [
 ];
 
 export const initialRooms = [
-  { id: "1", name: "Focus Room A", type: "workspace", capacity: 1, available: true },
-  { id: "2", name: "Focus Room B", type: "workspace", capacity: 1, available: true },
-  { id: "3", name: "Hot Desk 1", type: "workspace", capacity: 1, available: true },
-  { id: "4", name: "Hot Desk 2", type: "workspace", capacity: 1, available: true },
-  { id: "5", name: "Conference Room A", type: "conference", capacity: 8, available: true },
-  { id: "6", name: "Conference Room B", type: "conference", capacity: 12, available: true },
-  { id: "7", name: "Meeting Room Small", type: "conference", capacity: 4, available: true },
-  { id: "8", name: "Board Room", type: "conference", capacity: 16, available: true },
+  {
+    id: "1",
+    name: "Focus Room A",
+    type: "workspace",
+    capacity: 1,
+    available: true,
+  },
+  {
+    id: "2",
+    name: "Focus Room B",
+    type: "workspace",
+    capacity: 1,
+    available: true,
+  },
+  {
+    id: "3",
+    name: "Hot Desk 1",
+    type: "workspace",
+    capacity: 1,
+    available: true,
+  },
+  {
+    id: "4",
+    name: "Hot Desk 2",
+    type: "workspace",
+    capacity: 1,
+    available: true,
+  },
+  {
+    id: "5",
+    name: "Conference Room A",
+    type: "conference",
+    capacity: 8,
+    available: true,
+  },
+  {
+    id: "6",
+    name: "Conference Room B",
+    type: "conference",
+    capacity: 12,
+    available: true,
+  },
+  {
+    id: "7",
+    name: "Meeting Room Small",
+    type: "conference",
+    capacity: 4,
+    available: true,
+  },
+  {
+    id: "8",
+    name: "Board Room",
+    type: "conference",
+    capacity: 16,
+    available: true,
+  },
+  {
+    id: "9",
+    name: "Focus Room C",
+    type: "workspace",
+    capacity: 2,
+    available: true,
+  },
+  {
+    id: "10",
+    name: "Focus Room D",
+    type: "workspace",
+    capacity: 2,
+    available: true,
+  },
+  {
+    id: "11",
+    name: "Group Room A",
+    type: "workspace",
+    capacity: 5,
+    available: true,
+  },
+  {
+    id: "12",
+    name: "Group Room B",
+    type: "workspace",
+    capacity: 5,
+    available: true,
+  },
 ];
 
 export const initialBookings = [
@@ -61,8 +137,8 @@ export const initialBookings = [
     userName: "John Doe",
     roomId: "5",
     roomName: "Conference Room A",
-    startDate: idagMedTid(10,0),
-    endDate: idagMedTid(18,0),
+    startDate: idagMedTid(10, 0),
+    endDate: idagMedTid(18, 0),
     status: "active",
   },
 
@@ -203,8 +279,8 @@ export const DataProvider = ({ children }) => {
   const updateRoom = (id, updatedRoom) => {
     setRooms(
       rooms.map((room) =>
-        room.id === id ? { ...room, ...updatedRoom } : room
-      )
+        room.id === id ? { ...room, ...updatedRoom } : room,
+      ),
     );
   };
 
@@ -213,20 +289,23 @@ export const DataProvider = ({ children }) => {
     setBookings(bookings.filter((booking) => booking.roomId !== id));
   };
 
-  const addBooking = (booking) => {
+  const addBooking = (newBookingData) => {
     const newBooking = {
-      ...booking,
-      id: "booking-" + Date.now(),
+      id: "booking-" + Date.now(), // Generates a unique string ID
+      ...newBookingData,
     };
-    setBookings([...bookings, newBooking]);
+
+    // Updates the state array by adding the new object to the end
+    setBookings((prevBookings) => [...prevBookings, newBooking]);
+
     return newBooking.id;
   };
 
   const updateBooking = (id, updatedBooking) => {
     setBookings(
       bookings.map((booking) =>
-        booking.id === id ? { ...booking, ...updatedBooking } : booking
-      )
+        booking.id === id ? { ...booking, ...updatedBooking } : booking,
+      ),
     );
   };
 
@@ -234,17 +313,12 @@ export const DataProvider = ({ children }) => {
     setBookings(bookings.filter((booking) => booking.id !== id));
   };
 
-  const isRoomAvailable = (
-    roomId,
-    startDate,
-    endDate,
-    excludeBookingId
-  ) => {
+  const isRoomAvailable = (roomId, startDate, endDate, excludeBookingId) => {
     const roomBookings = bookings.filter(
       (booking) =>
         booking.roomId === roomId &&
         booking.status === "active" &&
-        booking.id !== excludeBookingId
+        booking.id !== excludeBookingId,
     );
 
     const start = new Date(startDate).getTime();
