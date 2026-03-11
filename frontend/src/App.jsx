@@ -11,8 +11,19 @@ import UserProfile from "./pages/user/UserProfile";
 import ProtectedRoute from "./components/utils/ProtectedRoute";
 import { DataProvider } from "./components/context/DataContext";
 import AutoTopScroller from "./components/services/AutoTopScroller";
+import axios from "axios";
+import { useEffect } from "react";
 
 function App() {
+  const fetchApi = async () => {
+    const response = await axios.get("http://localhost:8080/api");
+    console.log(response.data.bookings);
+  };
+
+  useEffect(() => {
+    fetchApi();
+  }, []);
+
   return (
     <DataProvider>
       <AutoTopScroller />
