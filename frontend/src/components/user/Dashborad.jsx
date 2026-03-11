@@ -4,7 +4,7 @@ import QuickActions from "./Dashborad/quick_action";
 import UpcomingBookings from "../ui/bookings/UpcomingBookings";
 import { useState } from "react";
 import { ConfirmationModal } from "../ui/ConfirmationModal";
-import BookingModal from "../ui/bookings/BookingModal";
+import { BookingEditModal } from "../ui/bookings/BookingModal";
 
 export default function Dashbord() {
   const { rooms, bookings, deleteBooking, updateBooking } = useData();
@@ -58,7 +58,7 @@ export default function Dashbord() {
       />
 
       {/* Booking Edit Modal */}
-      <BookingModal
+      <BookingEditModal
         booking={editingBooking}
         isOpen={isEditModalOpen}
         onClose={() => {

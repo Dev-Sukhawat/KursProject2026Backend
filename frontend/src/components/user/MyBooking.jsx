@@ -3,7 +3,7 @@ import UpcomingBookings from "../ui/bookings/UpcomingBookings";
 import { useData } from "../context/DataContext";
 import { useState } from "react";
 import { ConfirmationModal } from "../ui/ConfirmationModal";
-import BookingModal from "../ui/bookings/BookingModal";
+import { BookingEditModal } from "../ui/bookings/BookingModal";
 
 export default function MyBooking() {
   const { rooms, bookings, deleteBooking, updateBooking } = useData();
@@ -57,7 +57,7 @@ export default function MyBooking() {
       />
 
       {/* Booking Edit Modal */}
-      <BookingModal
+      <BookingEditModal
         booking={editingBooking}
         isOpen={isEditModalOpen}
         onClose={() => {
