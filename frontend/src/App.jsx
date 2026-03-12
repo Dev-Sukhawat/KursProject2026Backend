@@ -18,7 +18,7 @@ function App() {
   const fetchApi = async () => {
     try {
       const response = await axios.get("/api");
-      console.log(response.data.bookings);
+      console.log(response.data);
     } catch (error) {
       console.error("API error:", error);
     }
