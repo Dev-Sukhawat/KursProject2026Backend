@@ -16,9 +16,19 @@ dotenv.config({ path: path.join(__dirname, "../.env") });
 const supabaseJWT = process.env.SUPABASE_JWT_SECRET
 
 router.post("/register", async (req, res) => {
-    const { full_name, password, role = "user" } = req.body;
+    const { full_name, password, email, role="user" } = req.body;
 
     try {
+        const {data: existingUser} = await supabase
+            .from('profiles')
+            .select('email')
+            .eq('email', email)
+            .single();
+
+            if (existingUser) {
+            return res.status(409).json({error: "A user with this email already exists use another email or password" })
+        }
+
         const saltRounds = 10;
         const hashedPassword = await bcrypt.hash(password, saltRounds);
 
@@ -28,7 +38,8 @@ router.post("/register", async (req, res) => {
                 {
                     full_name: full_name,
                     password: hashedPassword,
-                    role: role
+                    role: role,
+                    email: email,
                 }
             ])
             .select();
@@ -39,7 +50,7 @@ router.post("/register", async (req, res) => {
         };
         res.status(201).json({
             message: "User Create",
-            user: { id: data[0].id, name: data[0].full_name }
+            user: { id: data[0].id, name: data[0].full_name, email: data[0].email }
         });
     } catch (error) {
         res.status(500).json({ error: error.message });
