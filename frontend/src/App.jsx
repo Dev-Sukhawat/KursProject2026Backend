@@ -10,7 +10,7 @@ import MyBooking from "./pages/user/MyBookingsPage";
 import UserProfile from "./pages/user/UserProfile";
 import ProtectedRoute from "./components/utils/ProtectedRoute";
 import { DataProvider } from "./components/context/DataContext";
-import AutoTopScroller from "./components/services/AutoTopScroller";
+import AutoTopScroller from "./services/AutoTopScroller";
 import axios from "axios";
 import { useEffect } from "react";
 
