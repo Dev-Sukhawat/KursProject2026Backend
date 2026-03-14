@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { defaultUsers } from "../context/DataContext";
-import { loginUser, registerUser, getUsers } from "../services/authService";
+import { authService } from "../../services/api";
 
 export default function AuthSection() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("login");
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
@@ -15,56 +15,37 @@ export default function AuthSection() {
   const [registerEmail, setRegisterEmail] = useState("");
   const [registerPassword, setRegisterPassword] = useState("");
 
-  const [error, setError] = useState("");
-
-  useEffect(() => {
-    const existingUsers = getUsers();
-
-    if (!existingUsers || existingUsers.length === 0) {
-      localStorage.setItem("users", JSON.stringify(defaultUsers));
-    }
-  }, []);
-
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setError("");
-
-    setTimeout(() => {
-      const result = loginUser(loginEmail, loginPassword);
-
-      if (!result.success) {
-        setError(result.message);
-        setIsLoading(false);
-        return;
-      }
-
+    try {
+      const result = await authService.login(loginEmail, loginPassword);
       navigate(result.user.role === "admin" ? "/admin" : "/user");
+    } catch (err) {
+      setError(err.message);
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setError("");
 
-    setTimeout(() => {
-      const result = registerUser(
-        registerName,
-        registerEmail,
-        registerPassword,
-      );
+    console.log(registerName, registerEmail, registerPassword);
 
-      if (!result.success) {
-        setError(result.message);
-        setIsLoading(false);
-        return;
-      }
+    try {
+      await authService.register(registerName, registerEmail, registerPassword);
 
-      navigate("/user");
+      setActiveTab("login");
+      setError("Account created! Now you can login.");
+    } catch (err) {
+      setError(err.message);
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
   return (
@@ -89,7 +70,10 @@ export default function AuthSection() {
           {/* Tabs */}
           <div className="bg-gray-200 p-1 rounded-full grid grid-cols-2 mb-6">
             <button
-              onClick={() => setActiveTab("login")}
+              onClick={() => {
+                setActiveTab("login");
+                setError("");
+              }}
               className={`py-2 text-sm font-medium rounded-full transition cursor-pointer ${
                 activeTab === "login"
                   ? "bg-white shadow text-black"
@@ -99,7 +83,10 @@ export default function AuthSection() {
               Login
             </button>
             <button
-              onClick={() => setActiveTab("register")}
+              onClick={() => {
+                setActiveTab("register");
+                setError("");
+              }}
               className={`py-2 text-sm font-medium rounded-full transition cursor-pointer ${
                 activeTab === "register"
                   ? "bg-white shadow text-black"
@@ -154,7 +141,11 @@ export default function AuthSection() {
 
                   {/* ✅ ERROR MESSAGE */}
                   {error && (
-                    <p className="text-red-500 text-sm text-center">{error}</p>
+                    <p
+                      className={`${error.includes("created") ? "text-green-600" : "text-red-500"} text-sm text-center`}
+                    >
+                      {error}
+                    </p>
                   )}
 
                   <button

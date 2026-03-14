@@ -18,11 +18,19 @@ const supabaseJWT = process.env.SUPABASE_JWT_SECRET
 router.post("/register", async (req, res) => {
     const { full_name, password, email, role="user" } = req.body;
 
+    if (!full_name || !email || !password) {
+        return res.status(400).json({ error: "All fields are required" });
+    }
+
+    const formattedEmail = email.toLowerCase().trim();
+    const formattedName = full_name.toLowerCase().trim();
+    const formattedRole = role.toLowerCase().trim();
+
     try {
         const {data: existingUser} = await supabase
             .from('profiles')
             .select('email')
-            .eq('email', email)
+            .eq('email', formattedEmail)
             .single();
 
             if (existingUser) {
@@ -36,9 +44,9 @@ router.post("/register", async (req, res) => {
             .from('profiles')
             .insert([
                 {
-                    full_name: full_name,
+                    full_name: formattedName,
                     password: hashedPassword,
-                    role: role,
+                    role: formattedRole,
                     email: email,
                 }
             ])
@@ -58,17 +66,23 @@ router.post("/register", async (req, res) => {
 })
 
 router.post("/login", async (req, res) => {
-    const { username, password } = req.body;
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+        return res.status(400).json({ error: "All fields are required" });
+    }
+
+    const formattedEmail = email.toLowerCase().trim();
 
     try {
         const { data: user, error } = await supabase
             .from('profiles')
             .select('*')
-            .eq('username', username)
+            .eq('email', formattedEmail)
             .single();
 
         if (error || !user) {
-            return res.status(401).json({ error: "Fel användarnamn eller lösenord" });
+            return res.status(401).json({ error: "Wroong email or password" });
         }
 
         const isMatch = await bcrypt.compare(password, user.password);

@@ -2,7 +2,7 @@ const API_BASE_URL = "http://localhost:8080/api";
 
 export const authService = {
   // Registrera
-  async register(fullName, password) {
+  async register(fullName, email, password) {
     const response = await fetch(`${API_BASE_URL}/auth/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
