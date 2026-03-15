@@ -2,26 +2,22 @@ import UsersList from "../../ui/users/UsersList";
 import { useData } from "../../context/DataContext";
 
 export default function UserCard() {
-  const { bookings } = useData();
+  const { users, bookings, isLoading } = useData();
 
-  const users = Array.from(
-    new Map(
-      bookings.map((booking) => [
-        booking.userId,
-        {
-          id: booking.userId,
-          name: booking.userName,
-          bookings: bookings.filter(
-            (b) => b.userId === booking.userId && b.status === "active"
-          ),
-        },
-      ])
-    ).values()
-  );
+  if (isLoading) return <p>Laddar användare...</p>;
+
+  const usersWithBookings = users.map((user) => ({
+    ...user,
+    id: user.id,
+    name: user.full_name,
+    bookings: bookings.filter(
+      (b) => b.user_id === user.id && b.status === "active",
+    ),
+  }));
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
-      <UsersList users={users} />
+      <UsersList users={usersWithBookings} />
     </div>
   );
 }
