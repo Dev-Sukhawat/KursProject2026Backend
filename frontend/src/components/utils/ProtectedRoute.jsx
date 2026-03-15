@@ -1,19 +1,33 @@
 import { Navigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 
 export default function ProtectedRoute({ children, role }) {
-  const storedUser = localStorage.getItem("ActiveUser");
+  const token = localStorage.getItem("token");
 
-  // ❌ Inte inloggad alls
-  if (!storedUser) {
+  if (!token) {
     return <Navigate to="/" replace />;
   }
 
-  const user = JSON.parse(storedUser);
+  try {
+    const decoded = jwtDecode(token);
 
-  // ❌ Fel roll
-  if (role && user.role !== role) {
+    const currentTime = Date.now() / 1000;
+    if (decoded.exp < currentTime) {
+      console.warn("Token has expired");
+      localStorage.removeItem("token");
+      return <Navigate to="/" replace />;
+    }
+
+    if (role && decoded.role !== role) {
+      console.error(`Access denied: Requires ${role} role`);
+      return <Navigate to="/" replace />;
+    }
+
+    return children;
+  } catch (error) {
+    // Om token är trasig eller ogiltig
+    console.error("Invalid token:", error);
+    localStorage.removeItem("token");
     return <Navigate to="/" replace />;
   }
-
-  return children;
 }

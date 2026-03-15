@@ -1,64 +1,38 @@
-// Get all Users
-export function getUsers() {
-    return JSON.parse(localStorage.getItem("users")) || [];
-}
+import { jwtDecode } from "jwt-decode";
 
-// Save Users
-export function saveUsers(users) {
-    localStorage.setItem("users", JSON.stringify(users));
-}
+// // Get all Users
+// export function getUsers() {
+//     return JSON.parse(localStorage.getItem("users")) || [];
+// }
+
+// // Save Users
+// export function saveUsers(users) {
+//     localStorage.setItem("users", JSON.stringify(users));
+// }
 
 // Logout funktion
 export function logoutUser() {
-    localStorage.removeItem("ActiveUser");
+    localStorage.removeItem("token");
     window.location.href = "/";
 }
 
 // Get current logged in user
 export function getCurrentUser() {
-    return JSON.parse(localStorage.getItem("ActiveUser")) || null;
-}
+    const token = localStorage.getItem("token");
 
-// Login funktion
-export function loginUser(email, password) {
-    const users = getUsers();
+    if (!token) return null;
 
-    const existingUser = users.find((user) => user.email === email);
+    try {
+        const decoded = jwtDecode(token);
 
-    if (!existingUser) {
-        return { success: false, message: "User does not exist. Please register first." };
+        const currentTime = Date.now() / 1000;
+        if (decoded.exp < currentTime) {
+            localStorage.removeItem("token");
+            return null;
+        }
+
+        return decoded;
+    } catch (error) {
+        return null;
     }
-
-    if (existingUser.password !== password) {
-        return { success: false, message: "Incorrect password." };
-    }
-
-    localStorage.setItem("ActiveUser", JSON.stringify(existingUser));
-
-    return { success: true, user: existingUser };
-}
-
-// Register funktion
-export function registerUser(name, email, password) {
-    const users = getUsers();
-
-    const userExists = users.find((user) => user.email === email);
-
-    if (userExists) {
-        return { success: false, message: "User already exists. Please login." };
-    }
-
-    const newUser = {
-        name,
-        email,
-        password,
-        role: "user",
-    };
-
-    users.push(newUser);
-    saveUsers(users);
-
-    localStorage.setItem("user", JSON.stringify(newUser));
-
-    return { success: true, user: newUser };
 }
