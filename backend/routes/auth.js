@@ -104,6 +104,7 @@ router.get("/users", async (req, res) => {
         const { data, error } = await supabase
             .from('profiles')
             .select('*')
+            .eq('role', 'user')
             .order('full_name', { ascending: true });
         if (error) throw error;
         res.status(200).json(data);
@@ -187,9 +188,9 @@ router.get("/bookings", async (req, res) => {
 
 // CREATE BOOKING
 router.post("/bookings", async (req, res) => {
-    const { user_id, room_id, start_time, end_time } = req.body;
+    const { user_id, room_id, start_date, end_date } = req.body;
     try {
-        const { data, error } = await supabase.from('bookings').insert([{ user_id, room_id, start_time, end_time }]).select();
+        const { data, error } = await supabase.from('bookings').insert([{ user_id, room_id, start_date, end_date }]).select();
         if (error) throw error;
         res.status(201).json(data[0]);
     } catch (err) {
