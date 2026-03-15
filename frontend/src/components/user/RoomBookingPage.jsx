@@ -43,13 +43,10 @@ export default function RoomBookingPage() {
     const currentUser = getCurrentUser();
 
     const finalBookingPayload = {
-      userId: currentUser.id,
-      userName: currentUser.name,
-      roomId: selectedRoom.id,
-      roomName: selectedRoom.name,
-      startDate: bookingData.startDate,
-      endDate: bookingData.endDate,
-      status: "active",
+      user_id: currentUser.id,
+      room_id: selectedRoom.id,
+      start_date: bookingData.startDate,
+      end_date: bookingData.endDate,
     };
     addBooking(finalBookingPayload);
     setIsModalOpen(false);
