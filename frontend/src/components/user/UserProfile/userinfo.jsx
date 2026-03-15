@@ -13,7 +13,7 @@ export default function ProfileStats({ bookings }) {
   if (!user || !bookings) {
     return <div className="p-4 text-gray-500">Loading stats...</div>;
   }
-  const userBookings = bookings.filter((b) => b.userId === user.id);
+  const userBookings = bookings;
 
   const upcomingBookings = userBookings.filter(
     (b) => b.status === "active" && new Date(b.startDate) >= new Date(),
@@ -44,7 +44,7 @@ export default function ProfileStats({ bookings }) {
               <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-0.5">
                 Full Name
               </p>
-              <p className="text-gray-900 font-semibold truncate">
+              <p className="text-gray-900 font-semibold truncate capitalize">
                 {user?.name || "Guest User"}
               </p>
             </div>
