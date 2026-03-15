@@ -1,5 +1,4 @@
-import React from 'react';
-import { Calendar, Clock, User, Trash2, Inbox } from 'lucide-react';
+import { Calendar, Clock, User, Trash2, Inbox } from "lucide-react";
 
 export const BookingList = ({ bookings, onDeleteClick }) => {
   const now = new Date();
@@ -35,7 +34,7 @@ export const BookingList = ({ bookings, onDeleteClick }) => {
             <div className="flex items-start justify-between mb-4">
               <div className="space-y-1">
                 <div className="flex items-center gap-3">
-                  <h3 className="font-bold text-secondary-foreground">
+                  <h3 className="font-bold text-secondary-foreground capitalize">
                     {booking.roomName}
                   </h3>
                   <span
@@ -67,11 +66,15 @@ export const BookingList = ({ bookings, onDeleteClick }) => {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 border-t border-gray-50 pt-4">
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <User className="w-4 h-4" />
-                <span>{booking.userName}</span>
+                <span className="capitalize">{booking.userName}</span>
               </div>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Calendar className="w-4 h-4" />
-                <span>{start.toLocaleDateString("sv-SE")}</span>
+                <span>
+                  {start.toLocaleDateString("sv-SE")}
+                  {" --> "}
+                  {end.toLocaleDateString("sv-SE")}
+                </span>
               </div>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Clock className="w-4 h-4" />

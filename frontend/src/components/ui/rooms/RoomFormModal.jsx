@@ -26,6 +26,7 @@ export default function RoomFormModal({
             type="text"
             placeholder="Room Name"
             value={formName}
+            maxLength={"32"}
             onChange={(e) => setFormName(e.target.value)}
             className="w-full border rounded-lg px-3 py-2"
             required
@@ -42,20 +43,21 @@ export default function RoomFormModal({
 
           <input
             type="number"
-            min="1"
+            min={"1"}
+            max={"1000"}
             value={formCapacity}
             onChange={(e) => setFormCapacity(e.target.value)}
             className="w-full border rounded-lg px-3 py-2"
             required
           />
 
-          <label className="flex items-center gap-2 cursor-pointer">
+          <label className="flex w-fit items-center gap-2 cursor-pointer capitalize">
             <input
               type="checkbox"
               checked={formAvailable}
               onChange={(e) => setFormAvailable(e.target.checked)}
             />
-            Available for Booking
+            Available For Booking
           </label>
 
           <div className="flex justify-end gap-2 pt-4">
@@ -69,7 +71,7 @@ export default function RoomFormModal({
 
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg cursor-pointer"
+              className="px-4 py-2 bg-primary text-white rounded-lg cursor-pointer"
             >
               {editingRoom ? "Update" : "Create"}
             </button>

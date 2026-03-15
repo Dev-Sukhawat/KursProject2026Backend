@@ -11,7 +11,7 @@ export default function RoomCard({
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
         <div>
-          <h3 className="font-semibold text-lg">{room.name}</h3>
+          <h3 className="font-semibold text-lg capitalize">{room.name}</h3>
           <p className="text-sm text-gray-500 mt-1">
             {room.type === "workspace" ? "Workspace" : "Conference Room"}
           </p>
