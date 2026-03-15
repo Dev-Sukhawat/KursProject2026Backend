@@ -14,7 +14,7 @@ export default function Header({ handleOpenDialog }) {
       {/* Right Side Button */}
       <button
         onClick={() => handleOpenDialog()}
-        className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg cursor-pointer hover:bg-blue-700 transition "
+        className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg cursor-pointer hover:bg-primary/80 transition "
       >
         <Plus size={16} />
         Add Room

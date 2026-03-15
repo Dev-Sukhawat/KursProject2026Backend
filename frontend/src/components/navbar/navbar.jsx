@@ -98,12 +98,14 @@ export default function Navbar({ children }) {
                 {isAdmin ? (
                   <>
                     Admin:
-                    <span className="ml-2 text-blue-600 font-medium">
+                    <span className="ml-2 text-primary capitalize font-medium">
                       ({user.name} )
                     </span>
                   </>
                 ) : (
-                  <span className="ml-2 font-medium ">{user.name}</span>
+                  <span className="ml-2 font-medium capitalize ">
+                    {user.name}
+                  </span>
                 )}
               </div>
 

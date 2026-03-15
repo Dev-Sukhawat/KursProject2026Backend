@@ -39,7 +39,7 @@ export default function UsersList({ users  }) {
               </div>
 
               <div>
-                <h3 className="font-semibold text-lg">
+                <h3 className="font-semibold capitalize text-lg">
                   {userData.name}
                 </h3>
 
@@ -52,9 +52,7 @@ export default function UsersList({ users  }) {
             {/* Stats */}
             <div className="space-y-3">
               <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-500">
-                  Active Bookings
-                </span>
+                <span className="text-gray-500">Active Bookings</span>
 
                 <span className="px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded-md">
                   {activeBookings}
@@ -62,9 +60,7 @@ export default function UsersList({ users  }) {
               </div>
 
               <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-500">
-                  Past Bookings
-                </span>
+                <span className="text-gray-500">Past Bookings</span>
 
                 <span className="px-2 py-1 text-xs bg-gray-200 text-gray-700 rounded-md">
                   {pastBookings}
@@ -72,9 +68,7 @@ export default function UsersList({ users  }) {
               </div>
 
               <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-500">
-                  Tootal Bookings
-                </span>
+                <span className="text-gray-500">Tootal Bookings</span>
 
                 <span className="px-2 py-1 text-xs bg-gray-200 text-gray-700 rounded-md">
                   {TotalBookings}
