@@ -1,6 +1,6 @@
 const API_BASE_URL = "http://localhost:8080/api/auth";
 
-// Hjälpfunktion för att hämta headers med token
+// Helper function for retrieving headers with token
 const getHeaders = () => {
   const token = localStorage.getItem("token");
   const headers = { "Content-Type": "application/json" };
@@ -10,7 +10,7 @@ const getHeaders = () => {
   return headers;
 };
 
-// Hjälpmetod för att hantera respons och fel centralt
+// Helper method for handling responses and errors centrally
 const handleResponse = async (response) => {
   const data = await response.json();
   if (!response.ok) {
@@ -103,6 +103,12 @@ export const roomService = {
 export const bookingService = {
   async getAll() {
     const response = await fetch(`${API_BASE_URL}/bookings`, { headers: getHeaders() });
+    return handleResponse(response);
+  },
+  async getById(id) {
+    const response = await fetch(`${API_BASE_URL}/bookings/${id}`, {
+      headers: getHeaders()
+    });
     return handleResponse(response);
   },
   async create(bookingData) {

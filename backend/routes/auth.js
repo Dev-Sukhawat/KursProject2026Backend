@@ -178,9 +178,32 @@ router.delete("/rooms/:id", async (req, res) => {
 // READ ALL
 router.get("/bookings", async (req, res) => {
     try {
-        const { data, error } = await supabase.from('bookings').select('*').order('created_at', { ascending: true });
+        const { data, error } = await supabase
+            .from('bookings')
+            .select(`
+                id,
+                status,
+                start_date,
+                end_date,
+                user_id,
+                room_id,
+                profiles (full_name),
+                rooms (name)
+            `)
+            .order('created_at', { ascending: false });
+
         if (error) throw error;
-        res.status(200).json(data);
+
+        // Flatten the data
+        const formatted = data.map(bookings => ({
+            ...bookings,
+            userName: bookings.profiles?.full_name || "Unknown User",
+            roomName: bookings.rooms?.name || "Unknown Room",
+            startDate: bookings.start_date,
+            endDate: bookings.end_date
+        }));
+
+        res.json(formatted);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -190,9 +213,36 @@ router.get("/bookings", async (req, res) => {
 router.post("/bookings", async (req, res) => {
     const { user_id, room_id, start_date, end_date } = req.body;
     try {
-        const { data, error } = await supabase.from('bookings').insert([{ user_id, room_id, start_date, end_date }]).select();
+        const { data, error } = await supabase
+            .from('bookings')
+            .insert([{ user_id, room_id, start_date, end_date, status: 'active' }])
+            .select();
+
         if (error) throw error;
         res.status(201).json(data[0]);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Hämta en specifik bokning via ID
+router.get("/bookings/:id", async (req, res) => {
+    const { id } = req.params;
+    try {
+        const { data, error } = await supabase
+            .from('bookings')
+            .select(`
+                *,
+                profiles (full_name, email),
+                rooms (name, type)
+            `)
+            .eq('id', id)
+            .single(); // Vi förväntar oss bara ett resultat
+
+        if (error) throw error;
+        if (!data) return res.status(404).json({ error: "Bokningen hittades inte" });
+
+        res.status(200).json(data);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
