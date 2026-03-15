@@ -46,7 +46,7 @@ export const authService = {
   }
 };
 
-// Users-tjänster (CRUD)
+// Users-services (CRUD)
 export const usersService = {
   async getAll() {
     const response = await fetch(`${API_BASE_URL}/users`, { headers: getHeaders() });
@@ -99,7 +99,7 @@ export const roomService = {
   }
 };
 
-// Boknings-tjänster (CRUD)
+// Boknings-services (CRUD)
 export const bookingService = {
   async getAll() {
     const response = await fetch(`${API_BASE_URL}/bookings`, { headers: getHeaders() });
@@ -110,6 +110,14 @@ export const bookingService = {
       method: "POST",
       headers: getHeaders(),
       body: JSON.stringify(bookingData),
+    });
+    return handleResponse(response);
+  },
+  async update(id, updates) {
+    const response = await fetch(`${API_BASE_URL}/bookings/${id}`, {
+      method: "PUT",
+      headers: getHeaders(),
+      body: JSON.stringify(updates),
     });
     return handleResponse(response);
   },
