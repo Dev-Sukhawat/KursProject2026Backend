@@ -20,7 +20,6 @@ export default function Room() {
 
   // OPEN DIALOG
   const handleOpenDialog = (room = null) => {
-      console.log(room);
     if (room) {
       setEditingRoom(room);
       setFormName(room.name);
