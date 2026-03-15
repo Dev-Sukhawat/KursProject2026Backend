@@ -1,38 +1,123 @@
-const API_BASE_URL = "http://localhost:8080/api";
+const API_BASE_URL = "http://localhost:8080/api/auth";
+
+// Hjälpfunktion för att hämta headers med token
+const getHeaders = () => {
+  const token = localStorage.getItem("token");
+  const headers = { "Content-Type": "application/json" };
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+  return headers;
+};
+
+// Hjälpmetod för att hantera respons och fel centralt
+const handleResponse = async (response) => {
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.error || "Något gick fel vid API-anropet");
+  }
+  return data;
+};
 
 export const authService = {
   // Registrera
   async register(fullName, email, password) {
-    const response = await fetch(`${API_BASE_URL}/auth/register`, {
+    const response = await fetch(`${API_BASE_URL}/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ full_name: fullName, password: password, role: "user", email: email }),
+      body: JSON.stringify({ full_name: fullName, email, password }),
     });
-    return this.handleResponse(response);
+    return handleResponse(response);
   },
 
   // Logga in
   async login(email, password) {
-    const response = await fetch(`${API_BASE_URL}/auth/login`, {
+    const response = await fetch(`${API_BASE_URL}/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: email, password: password }),
+      body: JSON.stringify({ email, password }),
     });
-    const data = await this.handleResponse(response);
+    const data = await handleResponse(response);
 
-    // Spara JWT-token i localStorage
     if (data.token) {
       localStorage.setItem("token", data.token);
     }
     return data;
-  },
+  }
+};
 
-  // Hjälpmetod för att hantera fel
-  async handleResponse(response) {
-    const data = await response.json();
-    if (!response.ok) {
-      throw new Error(data.error || "Något gick fel");
-    }
-    return data;
+// Users-tjänster (CRUD)
+export const usersService = {
+  async getAll() {
+    const response = await fetch(`${API_BASE_URL}/users`, { headers: getHeaders() });
+    return handleResponse(response);
+  },
+  async update(id, updates) {
+    const response = await fetch(`${API_BASE_URL}/users/${id}`, {
+      method: "PUT",
+      headers: getHeaders(),
+      body: JSON.stringify(updates),
+    });
+    return handleResponse(response);
+  },
+  async delete(id) {
+    const response = await fetch(`${API_BASE_URL}/users/${id}`, {
+      method: "DELETE",
+      headers: getHeaders(),
+    });
+    return handleResponse(response);
+  }
+};
+
+export const roomService = {
+  async getAll() {
+    const response = await fetch(`${API_BASE_URL}/rooms`, { headers: getHeaders() });
+    return handleResponse(response);
+  },
+  async create(roomData) {
+    const response = await fetch(`${API_BASE_URL}/rooms`, {
+      method: "POST",
+      headers: getHeaders(),
+      body: JSON.stringify(roomData),
+    });
+    return handleResponse(response);
+  },
+  async update(id, updates) {
+    const response = await fetch(`${API_BASE_URL}/rooms/${id}`, {
+      method: "PUT",
+      headers: getHeaders(),
+      body: JSON.stringify(updates),
+    });
+    return handleResponse(response);
+  },
+  async delete(id) {
+    const response = await fetch(`${API_BASE_URL}/rooms/${id}`, {
+      method: "DELETE",
+      headers: getHeaders(),
+    });
+    return handleResponse(response);
+  }
+};
+
+// Boknings-tjänster (CRUD)
+export const bookingService = {
+  async getAll() {
+    const response = await fetch(`${API_BASE_URL}/bookings`, { headers: getHeaders() });
+    return handleResponse(response);
+  },
+  async create(bookingData) {
+    const response = await fetch(`${API_BASE_URL}/bookings`, {
+      method: "POST",
+      headers: getHeaders(),
+      body: JSON.stringify(bookingData),
+    });
+    return handleResponse(response);
+  },
+  async delete(id) {
+    const response = await fetch(`${API_BASE_URL}/bookings/${id}`, {
+      method: "DELETE",
+      headers: getHeaders(),
+    });
+    return handleResponse(response);
   }
 };
