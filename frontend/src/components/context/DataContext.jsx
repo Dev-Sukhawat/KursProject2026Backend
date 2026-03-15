@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useState } from "react";
-import { idagMedTid } from "../services/idagMedTid";
+import React, { createContext, useContext, useState, useEffect } from "react";
+import { roomService, bookingService, usersService } from "../../services/api";
 
 const DataContext = createContext();
 
@@ -11,312 +11,110 @@ export const useData = () => {
   return context;
 };
 
-// Initial mock data
-export const defaultUsers = [
-  {
-    id: "9",
-    name: "Admin",
-    email: "admin@cowork.com",
-    password: "admin123",
-    role: "admin",
-  },
-  {
-    id: "8",
-    name: "Bob",
-    email: "bob@cowork.com",
-    password: "bob123",
-    role: "admin",
-  },
-  {
-    id: "7",
-    name: "TestUser",
-    email: "TestUser@cowork.com",
-    password: "TestUser123",
-    role: "user",
-  },
-  {
-    id: "5",
-    name: "Sofia Larsson",
-    email: "sofia.larsson@cowork.com",
-    password: "sofia123",
-    role: "user",
-  },
-];
-
-export const initialRooms = [
-  {
-    id: "1",
-    name: "Focus Room A",
-    type: "workspace",
-    capacity: 1,
-    available: true,
-  },
-  {
-    id: "2",
-    name: "Focus Room B",
-    type: "workspace",
-    capacity: 1,
-    available: true,
-  },
-  {
-    id: "3",
-    name: "Hot Desk 1",
-    type: "workspace",
-    capacity: 1,
-    available: true,
-  },
-  {
-    id: "4",
-    name: "Hot Desk 2",
-    type: "workspace",
-    capacity: 1,
-    available: true,
-  },
-  {
-    id: "5",
-    name: "Conference Room A",
-    type: "conference",
-    capacity: 8,
-    available: true,
-  },
-  {
-    id: "6",
-    name: "Conference Room B",
-    type: "conference",
-    capacity: 12,
-    available: true,
-  },
-  {
-    id: "7",
-    name: "Meeting Room Small",
-    type: "conference",
-    capacity: 4,
-    available: true,
-  },
-  {
-    id: "8",
-    name: "Board Room",
-    type: "conference",
-    capacity: 16,
-    available: true,
-  },
-  {
-    id: "9",
-    name: "Focus Room C",
-    type: "workspace",
-    capacity: 2,
-    available: true,
-  },
-  {
-    id: "10",
-    name: "Focus Room D",
-    type: "workspace",
-    capacity: 2,
-    available: true,
-  },
-  {
-    id: "11",
-    name: "Group Room A",
-    type: "workspace",
-    capacity: 5,
-    available: true,
-  },
-  {
-    id: "12",
-    name: "Group Room B",
-    type: "workspace",
-    capacity: 5,
-    available: true,
-  },
-];
-
-export const initialBookings = [
-  {
-    id: "1",
-    userId: "1",
-    userName: "John Doe",
-    roomId: "5",
-    roomName: "Conference Room A",
-    startDate: idagMedTid(10, 0),
-    endDate: idagMedTid(18, 0),
-    status: "active",
-  },
-
-  {
-    id: "2",
-    userId: "2",
-    userName: "Jane Smith",
-    roomId: "6",
-    roomName: "Conference Room B",
-    startDate: new Date(Date.now() - 86400000),
-    endDate: new Date(Date.now() + 86400000),
-    status: "active",
-  },
-
-  {
-    id: "3",
-    userId: "3",
-    userName: "Emma Anderson",
-    roomId: "3",
-    roomName: "Hot Desk 1",
-    startDate: new Date(2026, 2, 5, 8, 0),
-    endDate: new Date(2026, 2, 5, 17, 0),
-    status: "active",
-  },
-
-  {
-    id: "4",
-    userId: "4",
-    userName: "Lucas Nielsen",
-    roomId: "6",
-    roomName: "Conference Room B",
-    startDate: new Date(2026, 2, 5, 10, 0),
-    endDate: new Date(2026, 2, 5, 12, 0),
-    status: "active",
-  },
-
-  {
-    id: "5",
-    userId: "5",
-    userName: "Sofia Larsson",
-    roomId: "7",
-    roomName: "Meeting Room Small",
-    startDate: new Date(2026, 2, 6, 13, 0),
-    endDate: new Date(2026, 2, 6, 15, 0),
-    status: "active",
-  },
-
-  {
-    id: "6",
-    userId: "3",
-    userName: "Emma Anderson",
-    roomId: "2",
-    roomName: "Focus Room B",
-    startDate: new Date(2026, 2, 7, 9, 0),
-    endDate: new Date(2026, 2, 7, 11, 0),
-    status: "active",
-  },
-
-  {
-    id: "7",
-    userId: "4",
-    userName: "Lucas Nielsen",
-    roomId: "8",
-    roomName: "Board Room",
-    startDate: new Date(2026, 2, 9, 14, 0),
-    endDate: new Date(2026, 2, 9, 17, 0),
-    status: "active",
-  },
-
-  {
-    id: "8",
-    userId: "3",
-    userName: "Emma Anderson",
-    roomId: "4",
-    roomName: "Hot Desk 2",
-    startDate: new Date(2026, 2, 10, 8, 0),
-    endDate: new Date(2026, 2, 10, 12, 0),
-    status: "active",
-  },
-
-  {
-    id: "9",
-    userId: "5",
-    userName: "Sofia Larsson",
-    roomId: "5",
-    roomName: "Conference Room A",
-    startDate: new Date(2026, 2, 11, 10, 0),
-    endDate: new Date(2026, 2, 11, 12, 30),
-    status: "active",
-  },
-
-  {
-    id: "10",
-    userId: "3",
-    userName: "Emma Anderson",
-    roomId: "1",
-    roomName: "Focus Room A",
-    startDate: new Date(2026, 2, 2, 14, 0),
-    endDate: new Date(2026, 2, 2, 16, 0),
-    status: "active",
-  },
-
-  {
-    id: "11",
-    userId: "4",
-    userName: "Lucas Nielsen",
-    roomId: "7",
-    roomName: "Meeting Room Small",
-    startDate: new Date(2026, 2, 1, 9, 0),
-    endDate: new Date(2026, 2, 1, 11, 0),
-    status: "cancelled",
-  },
-
-  {
-    id: "12",
-    userId: "5",
-    userName: "Sofia Larsson",
-    roomId: "6",
-    roomName: "Conference Room B",
-    startDate: new Date(2026, 2, 12, 15, 0),
-    endDate: new Date(2026, 2, 12, 18, 0),
-    status: "active",
-  },
-];
-
 export const DataProvider = ({ children }) => {
-  const [rooms, setRooms] = useState(initialRooms);
-  const [bookings, setBookings] = useState(initialBookings);
+  const [rooms, setRooms] = useState([]);
+  const [bookings, setBookings] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const addRoom = (room) => {
-    const newRoom = {
-      ...room,
-      id: "room-" + Date.now(),
-    };
-    setRooms([...rooms, newRoom]);
-  };
-
-  const updateRoom = (id, updatedRoom) => {
-    setRooms(
-      rooms.map((room) =>
-        room.id === id ? { ...room, ...updatedRoom } : room,
-      ),
-    );
-  };
-
-  const deleteRoom = (id) => {
-    setRooms(rooms.filter((room) => room.id !== id));
-    setBookings(bookings.filter((booking) => booking.roomId !== id));
-  };
-
-  const addBooking = (newBookingData) => {
-    const newBooking = {
-      id: "booking-" + Date.now(), // Generates a unique string ID
-      ...newBookingData,
+  // 1. Hämta all data från Backend vid start
+  useEffect(() => {
+    const fetchInitialData = async () => {
+      try {
+        setIsLoading(true);
+        const [roomsData, bookingsData, usersData] = await Promise.all([
+          roomService.getAll(),
+          bookingService.getAll(),
+          usersService.getAll(),
+        ]);
+        setRooms(roomsData);
+        setBookings(bookingsData);
+        setUsers(usersData);
+      } catch (err) {
+        setError("Kunde inte ladda data från servern.");
+        console.error(err);
+      } finally {
+        setIsLoading(false);
+      }
     };
 
-    // Updates the state array by adding the new object to the end
-    setBookings((prevBookings) => [...prevBookings, newBooking]);
+    fetchInitialData();
+  }, []);
 
-    return newBooking.id;
+  // ==========================================
+  // ROOMS LOGIC (CRUD)
+  // ==========================================
+
+  const addRoom = async (roomData) => {
+    try {
+      const newRoom = await roomService.create(roomData);
+      setRooms((prev) => [...prev, newRoom]);
+      return newRoom;
+    } catch (err) {
+      console.error("Fel vid skapande av rum:", err);
+      throw err;
+    }
   };
 
-  const updateBooking = (id, updatedBooking) => {
-    setBookings(
-      bookings.map((booking) =>
-        booking.id === id ? { ...booking, ...updatedBooking } : booking,
-      ),
-    );
+  const updateRoom = async (id, updatedFields) => {
+    try {
+      const updatedRoom = await roomService.update(id, updatedFields);
+      setRooms((prev) =>
+        prev.map((room) => (room.id === id ? updatedRoom : room)),
+      );
+    } catch (err) {
+      console.error("Fel vid uppdatering av rum:", err);
+      throw err;
+    }
   };
 
-  const deleteBooking = (id) => {
-    setBookings(bookings.filter((booking) => booking.id !== id));
+  const deleteRoom = async (id) => {
+    try {
+      await roomService.delete(id);
+      setRooms((prev) => prev.filter((room) => room.id !== id));
+      // Vi rensar även bokningar lokalt som tillhörde rummet
+      setBookings((prev) => prev.filter((b) => b.room_id !== id));
+    } catch (err) {
+      console.error("Fel vid borttagning av rum:", err);
+      throw err;
+    }
   };
+
+  // ==========================================
+  // BOOKINGS LOGIC (CRUD)
+  // ==========================================
+
+  const addBooking = async (newBookingData) => {
+    try {
+      // Skicka till backend (väntar på svar med det riktiga ID:t från DB)
+      const savedBooking = await bookingService.create(newBookingData);
+      setBookings((prev) => [...prev, savedBooking]);
+      return savedBooking.id;
+    } catch (err) {
+      console.error("Fel vid bokning:", err);
+      throw err;
+    }
+  };
+
+  const deleteBooking = async (id) => {
+    try {
+      await bookingService.delete(id);
+      setBookings((prev) => prev.filter((booking) => booking.id !== id));
+    } catch (err) {
+      console.error("Fel vid borttagning av bokning:", err);
+      throw err;
+    }
+  };
+
+  // ==========================================
+  // UTILS / VALIDATION
+  // ==========================================
 
   const isRoomAvailable = (roomId, startDate, endDate, excludeBookingId) => {
     const roomBookings = bookings.filter(
       (booking) =>
-        booking.roomId === roomId &&
+        booking.room_id === roomId &&
         booking.status === "active" &&
         booking.id !== excludeBookingId,
     );
@@ -325,14 +123,14 @@ export const DataProvider = ({ children }) => {
     const end = new Date(endDate).getTime();
 
     for (const booking of roomBookings) {
-      const bookingStart = new Date(booking.startDate).getTime();
-      const bookingEnd = new Date(booking.endDate).getTime();
+      const bookingStart = new Date(booking.start_date).getTime();
+      const bookingEnd = new Date(booking.end_date).getTime();
 
+      // Kolla överlappning
       if (start < bookingEnd && end > bookingStart) {
         return false;
       }
     }
-
     return true;
   };
 
@@ -341,11 +139,13 @@ export const DataProvider = ({ children }) => {
       value={{
         rooms,
         bookings,
+        users,
+        isLoading,
+        error,
         addRoom,
         updateRoom,
         deleteRoom,
         addBooking,
-        updateBooking,
         deleteBooking,
         isRoomAvailable,
       }}
