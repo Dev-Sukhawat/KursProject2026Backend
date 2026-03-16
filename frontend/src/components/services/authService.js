@@ -1,15 +1,5 @@
 import { jwtDecode } from "jwt-decode";
 
-// // Get all Users
-// export function getUsers() {
-//     return JSON.parse(localStorage.getItem("users")) || [];
-// }
-
-// // Save Users
-// export function saveUsers(users) {
-//     localStorage.setItem("users", JSON.stringify(users));
-// }
-
 // Logout funktion
 export function logoutUser() {
     localStorage.removeItem("token");
