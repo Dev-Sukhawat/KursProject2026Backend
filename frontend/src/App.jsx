@@ -11,23 +11,8 @@ import UserProfile from "./pages/user/UserProfile";
 import ProtectedRoute from "./components/utils/ProtectedRoute";
 import { DataProvider } from "./components/context/DataContext";
 import AutoTopScroller from "./services/AutoTopScroller";
-import axios from "axios";
-import { useEffect } from "react";
 
 function App() {
-  const fetchApi = async () => {
-    try {
-      const response = await axios.get("/api");
-      console.log(response.data);
-    } catch (error) {
-      console.error("API error:", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchApi();
-  }, []);
-
   return (
     <DataProvider>
       <AutoTopScroller />
