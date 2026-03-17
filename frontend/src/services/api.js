@@ -105,8 +105,26 @@ export const bookingService = {
     const response = await fetch(`${API_BASE_URL}/bookings`, { headers: getHeaders() });
     return handleResponse(response);
   },
-  async getById(id) {
-    const response = await fetch(`${API_BASE_URL}/bookings/${id}`, {
+  async getByUser(userId) {
+    const response = await fetch(`${API_BASE_URL}/bookings/${userId}`, {
+      headers: getHeaders()
+    });
+    return handleResponse(response);
+  },
+  async checkAvailability(roomId, startDate, endDate, excludeId = null) {
+    // Guard: don't send request if values are missing
+    if (!roomId || !startDate || !endDate) {
+      console.error("checkAvailability missing params:", { roomId, startDate, endDate });
+      return { available: false };
+    }
+
+    const params = new URLSearchParams();
+    params.append("roomId", roomId);
+    params.append("startDate", startDate);
+    params.append("endDate", endDate);
+    if (excludeId) params.append("excludeId", excludeId);
+
+    const response = await fetch(`${API_BASE_URL}/bookings/availability?${params.toString()}`, {
       headers: getHeaders()
     });
     return handleResponse(response);

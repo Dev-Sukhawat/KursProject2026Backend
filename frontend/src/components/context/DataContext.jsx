@@ -84,15 +84,33 @@ export const DataProvider = ({ children }) => {
   // ==========================================
   // BOOKINGS LOGIC (CRUD)
   // ==========================================
-
+  const getUserBookings = async (userId) => {
+    try {
+      const userBookings = await bookingService.getByUser(userId);
+      return userBookings ?? [];
+    } catch (err) {
+      console.error("Fel vid hämtning av bokningar:", err);
+      return [];
+    }
+  };
   const addBooking = async (newBookingData) => {
     try {
-      // Skicka till backend (väntar på svar med det riktiga ID:t från DB)
       const savedBooking = await bookingService.create(newBookingData);
       setBookings((prev) => [...prev, savedBooking]);
       return savedBooking.id;
     } catch (err) {
       console.error("Fel vid bokning:", err);
+      throw err;
+    }
+  };
+  const updateBooking = async (id, updatedFields) => {
+    try {
+      const updatedBooking = await bookingService.update(id, updatedFields);
+      setBookings((prev) =>
+        prev.map((b) => (b.id === id ? updatedBooking : b)),
+      );
+    } catch (err) {
+      console.error("Fel vid uppdatering av bokning:", err);
       throw err;
     }
   };
@@ -111,28 +129,25 @@ export const DataProvider = ({ children }) => {
   // UTILS / VALIDATION
   // ==========================================
 
-  const isRoomAvailable = (roomId, startDate, endDate, excludeBookingId) => {
-    const roomBookings = bookings.filter(
-      (booking) =>
-        booking.room_id === roomId &&
-        booking.status === "active" &&
-        booking.id !== excludeBookingId,
+const isRoomAvailable = async (
+  roomId,
+  startDate,
+  endDate,
+  excludeBookingId = null,
+) => {
+  try {
+    const { available } = await bookingService.checkAvailability(
+      roomId,
+      startDate,
+      endDate,
+      excludeBookingId,
     );
-
-    const start = new Date(startDate).getTime();
-    const end = new Date(endDate).getTime();
-
-    for (const booking of roomBookings) {
-      const bookingStart = new Date(booking.start_date).getTime();
-      const bookingEnd = new Date(booking.end_date).getTime();
-
-      // Kolla överlappning
-      if (start < bookingEnd && end > bookingStart) {
-        return false;
-      }
-    }
-    return true;
-  };
+    return available;
+  } catch (err) {
+    console.error("Fel vid tillgänglighetskoll:", err);
+    return false; // fail safe — blocks booking if check fails
+  }
+};
 
   return (
     <DataContext.Provider
@@ -146,6 +161,8 @@ export const DataProvider = ({ children }) => {
         updateRoom,
         deleteRoom,
         addBooking,
+        getUserBookings,
+        updateBooking,
         deleteBooking,
         isRoomAvailable,
       }}
@@ -153,4 +170,4 @@ export const DataProvider = ({ children }) => {
       {children}
     </DataContext.Provider>
   );
-};
+};;
