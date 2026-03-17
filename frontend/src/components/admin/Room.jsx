@@ -4,14 +4,16 @@ import Header from "./Room/header";
 import RoomGrid from "../ui/rooms/RoomGrid";
 import RoomFormModal from "../ui/rooms/RoomFormModal";
 import { ConfirmationModal } from "../ui/ConfirmationModal";
+import { RoomFilter } from "./Room/RoomFilter";
 
 export default function Room() {
   const { rooms, addRoom, updateRoom, deleteRoom } = useData();
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingRoom, setEditingRoom] = useState(null);
-   const [isModalOpen, setIsModalOpen] = useState(false);
-   const [roomsToDelete, setRoomsToDelete] = useState(null)
+  const [availableFilter, setAvailableFilter] = useState("all");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [roomsToDelete, setRoomsToDelete] = useState(null);
 
   const [formName, setFormName] = useState("");
   const [formType, setFormType] = useState("workspace");
@@ -37,10 +39,22 @@ export default function Room() {
     setIsDialogOpen(true);
   };
 
-
   const handleCloseDialog = () => {
     setIsDialogOpen(false);
   };
+
+  const availableRooms = rooms.filter((r) => r.available === true);
+
+  const Unavailable = rooms.filter((r) => r.available === false);
+
+  const allRooms = [...availableRooms, ...Unavailable];
+
+  const fillteredRooms =
+    availableFilter === "available"
+      ? availableRooms
+      : availableFilter === "unavailable"
+        ? Unavailable
+        : allRooms;
 
   // SUBMIT (ADD / UPDATE)
   const handleSubmit = (e) => {
@@ -65,14 +79,14 @@ export default function Room() {
   // DELETE
   const handleDeleteTrigger = (id) => {
     setRoomsToDelete(id);
-    setIsModalOpen(true)
+    setIsModalOpen(true);
   };
 
   const handleConfirmDelete = () => {
     if (roomsToDelete) {
       deleteRoom(roomsToDelete);
       setIsModalOpen(false);
-      setRoomsToDelete(null)
+      setRoomsToDelete(null);
     }
   };
 
@@ -80,8 +94,15 @@ export default function Room() {
     <div className="max-w-7xl mx-auto px-4 py-8">
       <Header handleOpenDialog={handleOpenDialog} />
 
+      <RoomFilter
+        availableFilter={availableFilter}
+        setAvailableFilter={setAvailableFilter} // ← the setter
+        filteredRooms={fillteredRooms}
+      />
+
       <RoomGrid
         rooms={rooms}
+        allRooms={fillteredRooms}
         onEdit={handleOpenDialog}
         onDelete={handleDeleteTrigger}
         onAddFirst={() => handleOpenDialog()}
@@ -103,13 +124,13 @@ export default function Room() {
       />
 
       <ConfirmationModal
-      isOpen={isModalOpen}
-      onClose={() => setIsModalOpen(false)}
-      onConfirm={handleConfirmDelete}
-      title="Delete Room?"
-      description="Are you sure you want to delete this room? This action cannot be undone."
-      confirmText="Yes, Delete Room"
-      cancelText="Keep Room"
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onConfirm={handleConfirmDelete}
+        title="Delete Room?"
+        description="Are you sure you want to delete this room? This action cannot be undone."
+        confirmText="Yes, Delete Room"
+        cancelText="Keep Room"
       />
     </div>
   );
