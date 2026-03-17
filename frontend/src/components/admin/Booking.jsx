@@ -14,23 +14,46 @@ export default function Booking() {
 
   const now = new Date();
 
-  const filtered = bookings.filter((booking) => {
-    const startDate = new Date(booking.startDate);
-    const endDate = new Date(booking.endDate);
+  const startOfToday = new Date(now);
+  startOfToday.setHours(0, 0, 0, 0);
 
-    if (statusFilter === "all") return true;
-    if (statusFilter === "active") {
-      return now >= startDate && now <= endDate;
-    }
-    if (statusFilter === "upcoming") {
-      return startDate > now;
-    }
-    if (statusFilter === "past") {
-      return endDate < now;
-    }
+  const activeBookings = bookings
+    .filter(
+      (b) =>
+        b.status === "active" &&
+        new Date(b.startDate) <= now &&
+        new Date(b.endDate) >= now,
+    )
+    .sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
 
-    return true;
-  });
+  const upcomingBookings = bookings
+    .filter((b) => b.status === "active" && new Date(b.startDate) > now)
+    .sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
+
+  const pastBookings = bookings
+    .filter((b) => b.status === "active" && new Date(b.endDate) < now)
+    .sort((a, b) => new Date(b.startDate) - new Date(a.startDate));
+
+  const recentBookings = bookings
+    .filter(
+      (b) =>
+        new Date(b.created_at) >= startOfToday && new Date(b.created_at) <= now,
+    )
+    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+  const allBookings = [...activeBookings, ...upcomingBookings, ...pastBookings];
+
+  // ← now filtered is a simple lookup, no nested filters
+  const filtered =
+    statusFilter === "active"
+      ? activeBookings
+      : statusFilter === "upcoming"
+        ? upcomingBookings
+        : statusFilter === "past"
+          ? pastBookings
+          : statusFilter === "recent"
+            ? recentBookings
+            : allBookings; // default "all"
 
   const handleDeleteTrigger = (id) => {
     setBookingToDelete(id);
