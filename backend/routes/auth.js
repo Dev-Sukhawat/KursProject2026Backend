@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { supabase } from "../config/supabaseClient.js";
+import { log } from "console";
 
 const router = express.Router()
 
@@ -88,7 +89,6 @@ router.post("/login", async (req, res) => {
             supabaseJWT,
             { expiresIn: '1h' }
         );
-        // console.log(token, user); // Check what we have in tokens
 
         res.json({ token, user: { id: user.id, name: user.full_name, role: user.role } });
     } catch (error) {
@@ -171,6 +171,9 @@ router.delete("/rooms/:id", async (req, res) => {
     }
 });
 
+
+
+
 // ==========================================
 // BOOKINGS CRUD
 // ==========================================
@@ -187,6 +190,7 @@ router.get("/bookings", async (req, res) => {
                 end_date,
                 user_id,
                 room_id,
+                created_at,
                 profiles (full_name),
                 rooms (name)
             `)
@@ -195,12 +199,12 @@ router.get("/bookings", async (req, res) => {
         if (error) throw error;
 
         // Flatten the data
-        const formatted = data.map(bookings => ({
-            ...bookings,
-            userName: bookings.profiles?.full_name || "Unknown User",
-            roomName: bookings.rooms?.name || "Unknown Room",
-            startDate: bookings.start_date,
-            endDate: bookings.end_date
+        const formatted = data.map(({ profiles, rooms, start_date, end_date, ...rest }) => ({
+            ...rest,
+            userName: profiles?.full_name || "Unknown User",
+            roomName: rooms?.name || "Unknown Room",
+            startDate: start_date,
+            endDate: end_date,
         }));
 
         res.json(formatted);
@@ -215,34 +219,94 @@ router.post("/bookings", async (req, res) => {
     try {
         const { data, error } = await supabase
             .from('bookings')
-            .insert([{ user_id, room_id, start_date, end_date, status: 'active' }])
-            .select();
+            .insert([{
+                user_id,
+                room_id,
+                start_date: new Date(start_date).toISOString(),
+                end_date: new Date(end_date).toISOString(),
+                status: 'active'
+            }])
+            .select()
+            .single();
 
-        if (error) throw error;
-        res.status(201).json(data[0]);
+        if (error) {
+            if (error.message.includes("no_overlapping_bookings")) {
+                return res.status(409).json({ error: "Room is already booked for this time." });
+            }
+            throw error;
+        }
+        res.status(201).json(data);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
 
-// Hämta en specifik bokning via ID
-router.get("/bookings/:id", async (req, res) => {
-    const { id } = req.params;
+// Read specific booking
+router.get("/bookings/availability", async (req, res) => {
+    const { roomId, startDate, endDate, excludeId } = req.query;
+
+    if (!roomId || !startDate || !endDate) {
+        return res.status(400).json({ error: "roomId, startDate and endDate are required" });
+    }
+
+    try {
+        let query = supabase
+            .from("bookings")
+            .select("id, start_date, end_date")
+            .eq("room_id", roomId)
+            .eq("status", "active");
+
+        // Only exclude if provided (for edit bookings)
+        if (excludeId) {
+            query = query.neq("id", excludeId);
+        }
+
+        const { data, error } = await query;
+        if (error) throw error;
+
+        const hasOverlap = data.some(
+            (b) =>
+                new Date(startDate) < new Date(b.end_date) &&
+                new Date(endDate) > new Date(b.start_date),
+        );
+
+        res.json({ available: !hasOverlap });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// READ specific booking via ID
+router.get("/bookings/:userId", async (req, res) => {
+    const { userId } = req.params;
     try {
         const { data, error } = await supabase
             .from('bookings')
             .select(`
-                *,
+                id,
+                status,
+                start_date,
+                end_date,
+                user_id,
+                room_id,
                 profiles (full_name, email),
                 rooms (name, type)
             `)
-            .eq('id', id)
-            .single(); // Vi förväntar oss bara ett resultat
+            .eq('user_id', userId);
 
         if (error) throw error;
-        if (!data) return res.status(404).json({ error: "Bokningen hittades inte" });
+        if (!data) return res.status(404).json({ error: "Inga bokningar hittades" });
 
-        res.status(200).json(data);
+        const formatted = data.map(({ profiles, rooms, start_date, end_date, ...rest }) => ({
+            ...rest,
+            userName: profiles?.full_name || "Unknown User",
+            userEmail: profiles?.email || "Unknown Email",
+            roomName: rooms?.name || "Unknown Room",
+            startDate: new Date(start_date).toISOString(),
+            endDate: new Date(end_date).toISOString(),
+        }));
+
+        res.status(200).json(formatted);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -252,14 +316,24 @@ router.get("/bookings/:id", async (req, res) => {
 router.put("/bookings/:id", async (req, res) => {
     const { id } = req.params;
     const updates = req.body;
+    console.log(updates);
+
     try {
         const { data, error } = await supabase
             .from('bookings')
-            .update(updates)
+            .update(`${updates}`)
             .eq('id', id)
             .select();
         if (error) throw error;
-        res.json(data[0]);
+
+        const formatted = data.map(bookings => ({
+            ...bookings,
+            userName: bookings.profiles?.full_name || "Unknown User",
+            roomName: bookings.rooms?.name || "Unknown Room",
+            startDate: bookings.start_date,
+            endDate: bookings.end_date
+        }));
+        res.json(formatted);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
