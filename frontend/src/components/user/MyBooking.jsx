@@ -1,18 +1,27 @@
 import Header from "./MyBookings/header";
 import UpcomingBookings from "../ui/bookings/UpcomingBookings";
 import { useData } from "../context/DataContext";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ConfirmationModal } from "../ui/ConfirmationModal";
 import { BookingEditModal } from "../ui/bookings/BookingModal";
+import { getCurrentUser } from "../../components/services/authService";
 
 export default function MyBooking() {
-  const { rooms, bookings, deleteBooking, updateBooking } = useData();
+  const { rooms, getUserBookings, deleteBooking, updateBooking } = useData();
+  const user = getCurrentUser();
 
+  const [userBookings, setUserBookings] = useState([]);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-
   const [bookingToDelete, setBookingToDelete] = useState(null);
   const [editingBooking, setEditingBooking] = useState(null);
+  useEffect(() => {
+    if (user?.id) {
+      getUserBookings(user.id).then((data) => {
+        setUserBookings(data ?? []);
+      });
+    }
+  }, [user?.id]);
 
   const handleDeleteTrigger = (id) => {
     setBookingToDelete(id);
@@ -28,12 +37,12 @@ export default function MyBooking() {
   };
 
   const handleEditTrigger = (id) => {
-    const booking = bookings.find((b) => b.id === id);
+    const booking = userBookings.find((b) => b.id === id);
 
     if (booking) {
       setEditingBooking({
         ...booking,
-        room: rooms.find((r) => r.id === booking.roomId),
+        room: rooms.find((r) => r.id === booking.room_id),
       });
       setIsEditModalOpen(true);
     }
@@ -51,12 +60,11 @@ export default function MyBooking() {
 
       <UpcomingBookings
         rooms={rooms}
-        bookings={bookings}
+        bookings={userBookings}
         onDeleteClick={handleDeleteTrigger}
         onEditClick={handleEditTrigger}
       />
 
-      {/* Booking Edit Modal */}
       <BookingEditModal
         booking={editingBooking}
         isOpen={isEditModalOpen}
@@ -67,7 +75,6 @@ export default function MyBooking() {
         onSave={handleUpdateBooking}
       />
 
-      {/* Delete Confirmation Modal */}
       <ConfirmationModal
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}

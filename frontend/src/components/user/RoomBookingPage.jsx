@@ -16,6 +16,7 @@ export default function RoomBookingPage() {
   // --- 2. Modal States ---
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [bookingError, setBookingError] = useState(null);
 
   // --- 3. Filtering Logic ---
   const filteredRooms = rooms.filter((room) => {
@@ -39,8 +40,16 @@ export default function RoomBookingPage() {
     setIsModalOpen(true);
   };
 
-  const handleConfirmBooking = (bookingData) => {
+  const handleConfirmBooking = async (bookingData) => {
     const currentUser = getCurrentUser();
+
+    if (!bookingData || !selectedRoom) {
+      console.error("Missing bookingData or selectedRoom:", {
+        bookingData,
+        selectedRoom,
+      });
+      return;
+    }
 
     const finalBookingPayload = {
       user_id: currentUser.id,
@@ -48,9 +57,19 @@ export default function RoomBookingPage() {
       start_date: bookingData.startDate,
       end_date: bookingData.endDate,
     };
-    addBooking(finalBookingPayload);
-    setIsModalOpen(false);
-    setSelectedRoom(null);
+
+    try {
+      await addBooking(finalBookingPayload);
+      console.log("Booking saved:", finalBookingPayload);
+      setIsModalOpen(false);
+      setSelectedRoom(null);
+      // window.location.reload();
+    } catch (err) {
+      if (err.message.includes("already booked")) {
+        setBookingError("This room is already booked for the selected time.");
+      }
+      console.error("Fel vid bokning:", err);
+    }
   };
 
   return (
@@ -86,8 +105,10 @@ export default function RoomBookingPage() {
           onClose={() => {
             setIsModalOpen(false);
             setSelectedRoom(null);
+            setBookingError(null);
           }}
           onSave={handleConfirmBooking}
+          bookingError={bookingError}
         />
       )}
     </div>
