@@ -1,4 +1,5 @@
-import { Calendar, Clock, User, Trash2, Inbox } from "lucide-react";
+import { Calendar, Clock, User, Trash2, Inbox, Pickaxe } from "lucide-react";
+import { toLocalDate } from "../../utils/dateUtils";
 
 export const BookingList = ({ bookings, onDeleteClick }) => {
   const now = new Date();
@@ -63,10 +64,16 @@ export const BookingList = ({ bookings, onDeleteClick }) => {
               </button>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 border-t border-gray-50 pt-4">
+            <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 border-t border-gray-50 pt-4">
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <User className="w-4 h-4" />
                 <span className="capitalize">{booking.userName}</span>
+              </div>
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Pickaxe className="w-4 h-4" />
+                <span className="capitalize">
+                  {toLocalDate(booking.created_at)}
+                </span>
               </div>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Calendar className="w-4 h-4" />
