@@ -6,7 +6,7 @@ import {
   TrendingUp,
   CheckCircle,
 } from "lucide-react";
-import { getCurrentUser } from "../../services/authService";
+import { getCurrentUser } from "../../../services/authService";
 
 export default function ProfileStats({ bookings }) {
   const user = getCurrentUser();

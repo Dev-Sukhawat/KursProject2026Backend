@@ -2,7 +2,7 @@ import { useData } from "../context/DataContext";
 import Header from "./UserProfile/header";
 import UseInfo from "./UserProfile/userinfo";
 import { useState, useEffect } from "react";
-import { getCurrentUser } from "../../components/services/authService";
+import { getCurrentUser } from "../../services/authService";
 
 export default function UserProfile() {
   const { getUserBookings } = useData();

@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import NavButton from "../ui/navbar/NavButton";
-import { getCurrentUser, logoutUser } from "../services/authService";
+import { getCurrentUser, logoutUser } from "../../services/authService";
 import {
   LogOut,
   LayoutDashboard,

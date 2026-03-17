@@ -4,7 +4,7 @@ import { useData } from "../context/DataContext";
 import { useState, useEffect } from "react";
 import { ConfirmationModal } from "../ui/ConfirmationModal";
 import { BookingEditModal } from "../ui/bookings/BookingModal";
-import { getCurrentUser } from "../../components/services/authService";
+import { getCurrentUser } from "../../services/authService";
 
 export default function MyBooking() {
   const { rooms, getUserBookings, deleteBooking, updateBooking } = useData();

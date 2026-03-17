@@ -1,4 +1,4 @@
-import { getCurrentUser } from "../../services/authService";
+import { getCurrentUser } from "../../../services/authService";
 
 const user = getCurrentUser();
 

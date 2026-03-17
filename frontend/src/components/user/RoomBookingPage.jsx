@@ -4,7 +4,7 @@ import Header from "./RoomBookingPage/header";
 import { RoomBookingFilter } from "./RoomBookingPage/RoomBookingFilter";
 import RoomGrid from "./RoomBookingPage/RoomGrid";
 import { BookingModal } from "../ui/bookings/BookingModal";
-import { getCurrentUser } from "../services/authService";
+import { getCurrentUser } from "../../services/authService";
 
 export default function RoomBookingPage() {
   const { rooms, addBooking } = useData();

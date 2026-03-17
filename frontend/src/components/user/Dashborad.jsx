@@ -5,7 +5,7 @@ import UpcomingBookings from "../ui/bookings/UpcomingBookings";
 import { useState, useEffect } from "react";
 import { ConfirmationModal } from "../ui/ConfirmationModal";
 import { BookingEditModal } from "../ui/bookings/BookingModal";
-import { getCurrentUser } from "../../components/services/authService";
+import { getCurrentUser } from "../../services/authService";
 
 export default function Dashbord() {
   const { rooms, getUserBookings, deleteBooking, updateBooking } = useData();

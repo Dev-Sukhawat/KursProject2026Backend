@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { getCurrentUser } from "../components/services/authService";
+import { getCurrentUser } from "../services/authService";
 import Header from "../components/homepage/header";
 import Intro from "../components/homepage/intro";
 import Why from "../components/homepage/why";
