@@ -1,30 +1,35 @@
 import { useState, useEffect } from "react";
+import { useData } from "../../context/DataContext";
+import { toLocalInput } from "../../utils/dateUtils";
 
-export function BookingModal({ roombooking, isOpen, onClose, onSave }) {
+const now = new Date();
+now.setSeconds(0, 0);
+const minDateTime = now.toISOString().slice(0, 16);
+
+export function BookingModal({
+  roombooking,
+  isOpen,
+  onClose,
+  onSave,
+  bookingError,
+}) {
+  const { isRoomAvailable } = useData();
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [error, setError] = useState(""); // State to track validation errors
+  const [error, setError] = useState("");
 
   useEffect(() => {
     if (roombooking) {
-      const formatForInput = (date) => {
-        try {
-          return date ? new Date(date).toISOString().slice(0, 16) : "";
-        } catch (e) {
-          return "";
-        }
-      };
-
-      setStartDate(formatForInput(roombooking.startDate));
-      setEndDate(formatForInput(roombooking.endDate));
-      setError(""); // Reset error when opening
+      setStartDate(toLocalInput(roombooking.startDate));
+      setEndDate(toLocalInput(roombooking.endDate));
+      setError("");
     }
   }, [roombooking, isOpen]);
 
   if (!isOpen || !roombooking) return null;
 
-  const handleSave = () => {
-    // 1. Manual "Required" check
+  const handleSave = async () => {
+    // 1. Required check
     if (!startDate || !endDate) {
       setError("Please select both start and end dates.");
       return;
@@ -33,21 +38,35 @@ export function BookingModal({ roombooking, isOpen, onClose, onSave }) {
     const start = new Date(startDate);
     const end = new Date(endDate);
 
-    // 2. Logic check: End must be after Start
-    if (end <= start) {
-      setError("End time must be after the start time.");
-      return;
-    }
-
-    // 3. Final validation check for "Invalid Date"
+    // 2. Invalid date check
     if (isNaN(start.getTime()) || isNaN(end.getTime())) {
       setError("Please enter valid dates.");
       return;
     }
 
-    // Success - call onSave
+    // 3. End must be after start
+    if (end <= start) {
+      setError("End time must be after the start time.");
+      return;
+    }
+
+    // 4.Check room availability
+    const available = await isRoomAvailable(
+      roombooking.id,
+      start.toISOString(),
+      end.toISOString(),
+      null,
+    );
+
+    if (!available) {
+      setError(
+        "This room is already booked for the selected time. Please choose a different time.",
+      );
+      return;
+    }
+
+    // 5. All good
     onSave({
-      ...roombooking,
       startDate: start.toISOString(),
       endDate: end.toISOString(),
     });
@@ -67,6 +86,13 @@ export function BookingModal({ roombooking, isOpen, onClose, onSave }) {
           </div>
         )}
 
+        {bookingError && (
+          <div className="mb-4 p-3 bg-orange-50 border border-orange-200 text-orange-700 text-sm rounded-lg flex items-center gap-2">
+            <span>🚫</span>
+            {bookingError}
+          </div>
+        )}
+
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1">
@@ -75,6 +101,7 @@ export function BookingModal({ roombooking, isOpen, onClose, onSave }) {
             <input
               type="datetime-local"
               value={startDate}
+              min={minDateTime}
               onChange={(e) => {
                 setStartDate(e.target.value);
                 setError(""); // Clear error when user types
@@ -94,6 +121,7 @@ export function BookingModal({ roombooking, isOpen, onClose, onSave }) {
             <input
               type="datetime-local"
               value={endDate}
+              min={startDate || minDateTime}
               onChange={(e) => {
                 setEndDate(e.target.value);
                 setError("");
@@ -140,16 +168,14 @@ export function BookingEditModal({ booking, isOpen, onClose, onSave }) {
   // 1. Initialize state as null or empty strings
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [error, setError] = useState("");
 
   // 2. Sync state when the 'booking' prop changes (Crucial!)
   useEffect(() => {
     if (booking) {
-      // Format to 'YYYY-MM-DDTHH:mm' for datetime-local input
-      const formatForInput = (date) =>
-        date ? new Date(date).toISOString().slice(0, 16) : "";
-
-      setStartDate(formatForInput(booking.startDate));
-      setEndDate(formatForInput(booking.endDate));
+      setStartDate(toLocalInput(booking.startDate));
+      setEndDate(toLocalInput(booking.endDate));
+      setError("");
     }
   }, [booking, isOpen]);
 
@@ -157,10 +183,23 @@ export function BookingEditModal({ booking, isOpen, onClose, onSave }) {
   if (!isOpen || !booking) return null;
 
   const handleSave = () => {
+    if (!startDate || !endDate) {
+      setError("Please select both start and end dates.");
+      return;
+    }
+
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    if (end <= start) {
+      setError("End time must be after start time.");
+      return;
+    }
+
     onSave({
       ...booking,
-      startDate: new Date(startDate).toISOString(),
-      endDate: new Date(endDate).toISOString(),
+      startDate: start.toISOString(),
+      endDate: end.toISOString(),
     });
   };
 
@@ -168,6 +207,13 @@ export function BookingEditModal({ booking, isOpen, onClose, onSave }) {
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-xl w-full max-w-md p-6 shadow-2xl">
         <h2 className="text-xl font-bold mb-4">Edit Booking</h2>
+
+        {error && (
+          <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-600 text-sm rounded-lg flex items-center gap-2">
+            <span>⚠️</span>
+            {error}
+          </div>
+        )}
 
         <div className="space-y-4">
           {/* Start Date */}
@@ -178,6 +224,7 @@ export function BookingEditModal({ booking, isOpen, onClose, onSave }) {
             <input
               type="datetime-local"
               value={startDate}
+              min={minDateTime}
               onChange={(e) => setStartDate(e.target.value)}
               className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
             />
@@ -191,6 +238,7 @@ export function BookingEditModal({ booking, isOpen, onClose, onSave }) {
             <input
               type="datetime-local"
               value={endDate}
+              min={startDate || minDateTime}
               onChange={(e) => setEndDate(e.target.value)}
               className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
             />
