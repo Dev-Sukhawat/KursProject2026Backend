@@ -1,5 +1,5 @@
 import RecentListCard from "../../ui/dashborad/RecentListCard";
-
+import { toLocalDate, toLocalTime } from "../../utils/dateUtils";
 
 export default function RecentActivity({ recentBookings = bookings }) {
   return (
@@ -21,24 +21,22 @@ export default function RecentActivity({ recentBookings = bookings }) {
           </div>
 
           <div className="text-right">
+            <p className="text-xs text-gray-500 capitalize">
+              <span className="text-sm">C : </span>
+              {toLocalDate(booking.created_at)}
+            </p>
             <p className="text-sm">
-              {new Date(booking.startDate).toLocaleDateString()}
+              {toLocalDate(booking.startDate)}
               {" - "}
               <span className="text-destructive">
-                {new Date(booking.endDate).toLocaleDateString()}
+                {toLocalDate(booking.endDate)}
               </span>
             </p>
             <p className="text-xs text-gray-500">
-              {new Date(booking.startDate).toLocaleTimeString([], {
-                hour: "2-digit",
-                minute: "2-digit",
-              })}
+              {toLocalTime(booking.startDate)}
               {" - "}
               <span className="text-destructive">
-                {new Date(booking.endDate).toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
+                {toLocalTime(booking.endDate)}
               </span>
             </p>
           </div>

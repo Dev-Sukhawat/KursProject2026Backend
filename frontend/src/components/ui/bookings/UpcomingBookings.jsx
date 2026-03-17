@@ -1,17 +1,15 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { getCurrentUser } from "../../services/authService";
 import { Calendar, Clock, Plus, Edit, Trash2 } from "lucide-react";
+import { toLocalDisplay, toLocalTime } from "../../utils/dateUtils";
 
 export default function UpcomingBookings({
-  rooms,
-  bookings,
+  bookings = [],
   onDeleteClick,
   onEditClick,
 }) {
   const navigate = useNavigate();
   const location = useLocation();
-  const user = getCurrentUser();
 
   const isUserPage = location.pathname === "/user";
   const isMyBookingsPage = location.pathname === "/my-bookings";
@@ -24,17 +22,23 @@ export default function UpcomingBookings({
     }
   }, [isUserPage]);
 
-  const userBookings = bookings.filter((b) => b.userId === user.id);
+  const now = new Date();
 
-  const upcomingBookings = userBookings.filter(
-    (b) => b.status === "active" && new Date(b.startDate) >= new Date(),
-  );
+  const upcomingBookings = bookings
+    .filter((b) => b.status === "active" && new Date(b.endDate) > now)
+    .sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
+
+  const pastBookings = bookings
+    .filter((b) => b.status === "active" && new Date(b.endDate) <= now)
+    .sort((a, b) => new Date(b.startDate) - new Date(a.startDate));
+
+  const allBookings = [...upcomingBookings, ...pastBookings];
 
   const displayedBookings = isUserPage
     ? upcomingBookings
     : activeTab === "upcoming"
       ? upcomingBookings
-      : userBookings;
+      : allBookings;
 
   return (
     <>
@@ -85,7 +89,7 @@ export default function UpcomingBookings({
       ) : (
         <div>
           {displayedBookings.map((booking) => {
-            const isPast = new Date(booking.endDate) < new Date();
+            const isPast = new Date(booking.endDate) < now;
 
             return (
               <div
@@ -100,7 +104,7 @@ export default function UpcomingBookings({
                       {booking.roomName || "Room Name Not Found"}
                     </h3>
                     <p className="text-sm text-gray-500">
-                      {new Date(booking.startDate).toLocaleDateString()}
+                      {toLocalDisplay(booking.startDate)}
                     </p>
                   </div>
 
@@ -118,21 +122,15 @@ export default function UpcomingBookings({
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 text-sm text-gray-500">
                     <Clock className="w-4 h-4" />
-                    {new Date(booking.startDate).toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}{" "}
-                    -{" "}
-                    {new Date(booking.endDate).toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
+                    {toLocalTime(booking.startDate)}
+                    {" - "}
+                    {toLocalTime(booking.endDate)}
                   </div>
 
                   {!isPast && (
                     <div className="flex gap-2">
                       <button
-                        onClick={() => onEditClick(booking.id)} // Fixed this call
+                        onClick={() => onEditClick(booking.id)}
                         className="flex items-center gap-1 px-3 py-1 border rounded-md text-sm cursor-pointer hover:bg-gray-50"
                       >
                         <Edit className="w-4 h-4" />
