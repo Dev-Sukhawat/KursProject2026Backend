@@ -5,7 +5,7 @@ import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { supabase } from "../config/supabaseClient.js";
-import { log } from "console";
+import logger from "../utils/logger.js";
 
 const router = express.Router()
 
@@ -24,6 +24,7 @@ router.post("/register", async (req, res) => {
     const { full_name, password, email, role = "user" } = req.body;
 
     if (!full_name || !email || !password) {
+        logger.warn("Register attempt with missing fields");
         return res.status(400).json({ error: "All fields are required" });
     }
 
@@ -39,6 +40,7 @@ router.post("/register", async (req, res) => {
             .maybeSingle();
 
         if (existingUser) {
+            logger.warn(`Register failed - email already exists: ${formattedEmail}`);
             return res.status(409).json({ error: "A user with this email already exists" })
         }
 
@@ -57,18 +59,23 @@ router.post("/register", async (req, res) => {
 
         if (error) throw error;
 
+        logger.info(`New user registered: ${formattedEmail}`);
         res.status(201).json({
             message: "User Created",
             user: { id: data[0].id, name: data[0].full_name, email: data[0].email }
         });
     } catch (error) {
+        logger.error(`Register failed - ${error.message}`);
         res.status(500).json({ error: error.message });
     }
 })
 
 router.post("/login", async (req, res) => {
     const { email, password } = req.body;
-    if (!email || !password) return res.status(400).json({ error: "All fields are required" });
+    if (!email || !password) {
+        logger.warn("Login attempt with missing fields");
+        return res.status(400).json({ error: "All fields are required" });
+    }
 
     const formattedEmail = email.toLowerCase().trim();
 
@@ -79,10 +86,16 @@ router.post("/login", async (req, res) => {
             .eq('email', formattedEmail)
             .single();
 
-        if (error || !user) return res.status(401).json({ error: "Wrong email or password" });
+        if (error || !user) {
+            logger.warn(`Login failed - user not found: ${formattedEmail}`);
+            return res.status(401).json({ error: "Wrong email or password" });
+        }
 
         const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) return res.status(401).json({ error: "Wrong email or password" });
+        if (!isMatch) {
+            logger.warn(`Login failed - incorrect password: ${formattedEmail}`);
+            return res.status(401).json({ error: "Wrong email or password" });
+        }
 
         const token = jwt.sign(
             { id: user.id, name: user.full_name, email: user.email, role: user.role },
@@ -90,8 +103,10 @@ router.post("/login", async (req, res) => {
             { expiresIn: '1h' }
         );
 
+        logger.info(`User logged in: ${formattedEmail}`);
         res.json({ token, user: { id: user.id, name: user.full_name, role: user.role } });
     } catch (error) {
+        logger.error(`Login failed - ${error.message}`);
         res.status(500).json({ error: error.message });
     }
 });
@@ -107,8 +122,10 @@ router.get("/users", async (req, res) => {
             .eq('role', 'user')
             .order('full_name', { ascending: true });
         if (error) throw error;
+        logger.info(`Fetched ${data.length} users`);
         res.status(200).json(data);
     } catch (err) {
+        logger.error(`Failed to fetch users - ${err.message}`);
         res.status(500).json({ error: err.message });
     }
 });
@@ -128,8 +145,10 @@ router.get("/rooms", async (req, res) => {
             .select('*')
             .order('capacity', { ascending: true });
         if (error) throw error;
+        logger.info(`Fetched ${data.length} rooms`);
         res.status(200).json(data);
     } catch (err) {
+        logger.error(`Failed to fetch rooms - ${err.message}`);
         res.status(500).json({ error: err.message });
     }
 });
@@ -140,8 +159,10 @@ router.post("/rooms", async (req, res) => {
     try {
         const { data, error } = await supabase.from('rooms').insert([{ name, type, capacity, available }]).select();
         if (error) throw error;
+        logger.info(`Room created: ${data[0].name}`);
         res.status(201).json(data[0]);
     } catch (err) {
+        logger.error(`Failed to create room - ${err.message}`);
         res.status(500).json({ error: err.message });
     }
 });
@@ -153,8 +174,10 @@ router.put("/rooms/:id", async (req, res) => {
     try {
         const { data, error } = await supabase.from('rooms').update(updates).eq('id', id).select();
         if (error) throw error;
+        logger.info(`Room updated: ${id}`);
         res.json(data[0]);
     } catch (err) {
+        logger.error(`Failed to update room - ${err.message}`);
         res.status(500).json({ error: err.message });
     }
 });
@@ -165,8 +188,10 @@ router.delete("/rooms/:id", async (req, res) => {
     try {
         const { error } = await supabase.from('rooms').delete().eq('id', id);
         if (error) throw error;
+        logger.info(`Room deleted: ${id}`);
         res.json({ message: "Room deleted" });
     } catch (err) {
+        logger.error(`Failed to delete room - ${err.message}`);
         res.status(500).json({ error: err.message });
     }
 });
@@ -197,6 +222,7 @@ router.get("/bookings", async (req, res) => {
             .order('created_at', { ascending: false });
 
         if (error) throw error;
+        logger.info(`Fetched ${data.length} bookings`);
 
         // Flatten the data
         const formatted = data.map(({ profiles, rooms, start_date, end_date, ...rest }) => ({
@@ -209,6 +235,7 @@ router.get("/bookings", async (req, res) => {
 
         res.json(formatted);
     } catch (err) {
+        logger.error(`Failed to fetch bookings - ${err.message}`);
         res.status(500).json({ error: err.message });
     }
 });
@@ -231,12 +258,15 @@ router.post("/bookings", async (req, res) => {
 
         if (error) {
             if (error.message.includes("no_overlapping_bookings")) {
+                logger.warn(`Booking conflict for room: ${room_id}`);
                 return res.status(409).json({ error: "Room is already booked for this time." });
             }
             throw error;
         }
+        logger.info(`Booking created: ${data.id}`);
         res.status(201).json(data);
     } catch (err) {
+        logger.error(`Failed to create booking - ${err.message}`);
         res.status(500).json({ error: err.message });
     }
 });
@@ -246,6 +276,7 @@ router.get("/bookings/availability", async (req, res) => {
     const { roomId, startDate, endDate, excludeId } = req.query;
 
     if (!roomId || !startDate || !endDate) {
+        logger.warn("Availability check missing params");
         return res.status(400).json({ error: "roomId, startDate and endDate are required" });
     }
 
@@ -270,8 +301,10 @@ router.get("/bookings/availability", async (req, res) => {
                 new Date(endDate) > new Date(b.start_date),
         );
 
+        logger.info(`Availability check for room ${roomId}: ${!hasOverlap ? "available" : "unavailable"}`);
         res.json({ available: !hasOverlap });
     } catch (err) {
+        logger.error(`Availability check failed: ${err.message}`, { err });
         res.status(500).json({ error: err.message });
     }
 });
@@ -306,8 +339,10 @@ router.get("/bookings/:userId", async (req, res) => {
             endDate: new Date(end_date).toISOString(),
         }));
 
+        logger.info(`Fetched ${formatted.length} bookings for user ${userId}`);
         res.status(200).json(formatted);
     } catch (err) {
+        logger.error(`Failed to fetch bookings for user ${userId}: ${err.message}`, { err });
         res.status(500).json({ error: err.message });
     }
 });
@@ -316,12 +351,11 @@ router.get("/bookings/:userId", async (req, res) => {
 router.put("/bookings/:id", async (req, res) => {
     const { id } = req.params;
     const updates = req.body;
-    console.log(updates);
 
     try {
         const { data, error } = await supabase
             .from('bookings')
-            .update(`${updates}`)
+            .update(updates)
             .eq('id', id)
             .select();
         if (error) throw error;
@@ -333,8 +367,11 @@ router.put("/bookings/:id", async (req, res) => {
             startDate: bookings.start_date,
             endDate: bookings.end_date
         }));
+
+        logger.info(`Booking updated: ${id}`);
         res.json(formatted);
     } catch (err) {
+        logger.error(`Failed to update booking ${id} - ${err.message}`, { err });
         res.status(500).json({ error: err.message });
     }
 });
@@ -345,8 +382,10 @@ router.delete("/bookings/:id", async (req, res) => {
     try {
         const { error } = await supabase.from('bookings').delete().eq('id', id);
         if (error) throw error;
+        logger.info(`Booking cancelled: ${id}`);
         res.json({ message: "Booking cancelled" });
     } catch (err) {
+        logger.error(`Failed to cancel booking ${id}: ${err.message}`, { err });
         res.status(500).json({ error: err.message });
     }
 });
