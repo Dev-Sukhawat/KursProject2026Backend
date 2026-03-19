@@ -74,6 +74,7 @@ export default function Room() {
     }
 
     setIsDialogOpen(false);
+    window.location.reload();
   };
 
   // DELETE

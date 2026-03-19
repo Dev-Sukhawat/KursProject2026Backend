@@ -2,8 +2,6 @@ import React from "react";
 import { Filter } from "lucide-react";
 
 export const RoomFilter = ({ availableFilter, setAvailableFilter }) => {
-  console.log(availableFilter);
-
   return (
     <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6 mb-8">
       <div className="flex items-center gap-2 mb-4">
