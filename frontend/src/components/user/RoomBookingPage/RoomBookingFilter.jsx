@@ -96,7 +96,8 @@ export const RoomBookingFilter = ({
               <option value="1">1 Person</option>
               <option value="4">2-4 People</option>
               <option value="8">5-8 People</option>
-              <option value="16">9+ People</option>
+              <option value="9">9-17 People</option>
+              <option value="18+">18+ People</option>
             </select>
           </div>
 

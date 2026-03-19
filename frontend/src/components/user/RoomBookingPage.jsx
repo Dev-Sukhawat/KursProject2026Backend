@@ -26,13 +26,21 @@ export default function RoomBookingPage() {
     const matchesType = typeFilter === "all" || room.type === typeFilter;
 
     // Capacity logic: e.g., if filter is '4', show rooms with capacity >= 4
-    const matchesCapacity =
-      capacityFilter === "all" ||
-      (room.capacity >= parseInt(capacityFilter) &&
-        room.capacity <= parseInt(capacityFilter));
+    let matchesCapacity = true;
+    if (capacityFilter !== "all") {
+      const cap = room.capacity;
+      if (capacityFilter === "1") matchesCapacity = cap === 1;
+      else if (capacityFilter === "4") matchesCapacity = cap >= 2 && cap <= 4;
+      else if (capacityFilter === "8") matchesCapacity = cap >= 5 && cap <= 8;
+      else if (capacityFilter === "9") matchesCapacity = cap >= 9 && cap <= 17;
+      else if (capacityFilter === "18+") matchesCapacity = cap >= 18;
+    }
 
     return matchesSearch && matchesType && matchesCapacity;
   });
+  const finalFilteredRooms = [...filteredRooms].sort(
+    (a, b) => b.available - a.available,
+  );
 
   // --- 4. Handlers ---
   const handleBookClick = (room) => {
@@ -88,7 +96,7 @@ export default function RoomBookingPage() {
 
       {/* Passing the filtered list to the Grid */}
       <RoomGrid
-        rooms={filteredRooms}
+        rooms={finalFilteredRooms}
         onBook={handleBookClick}
         onClearFilters={() => {
           setSearchQuery("");
