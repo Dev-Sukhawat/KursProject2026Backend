@@ -18,6 +18,9 @@ export default function RecentActivity({ recentBookings = bookings }) {
             <p className="text-sm text-gray-500 capitalize">
               Booked by {booking.userName}
             </p>
+            <p className=" text-xs text-gray-500 capitalize">
+              RId: {booking.id.slice(0, 8)}
+            </p>
           </div>
 
           <div className="text-right">
