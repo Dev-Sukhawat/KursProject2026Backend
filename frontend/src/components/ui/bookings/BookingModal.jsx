@@ -196,6 +196,16 @@ export function BookingEditModal({ booking, isOpen, onClose, onSave }) {
       return;
     }
 
+    const newStartISO = start.toISOString();
+    const newEndISO = end.toISOString();
+
+    const hasChanges =
+      newStartISO !== booking.startDate || newEndISO !== booking.endDate;
+
+    if (!hasChanges) {
+      setError("No changes detected. Please modify the dates before saving.");
+      return;
+    }
     onSave({
       ...booking,
       startDate: start.toISOString(),
@@ -226,7 +236,7 @@ export function BookingEditModal({ booking, isOpen, onClose, onSave }) {
               value={startDate}
               min={minDateTime}
               onChange={(e) => setStartDate(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none cursor-pointer"
             />
           </div>
 
@@ -240,7 +250,7 @@ export function BookingEditModal({ booking, isOpen, onClose, onSave }) {
               value={endDate}
               min={startDate || minDateTime}
               onChange={(e) => setEndDate(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none cursor-pointer"
             />
           </div>
 
@@ -259,13 +269,13 @@ export function BookingEditModal({ booking, isOpen, onClose, onSave }) {
         <div className="flex justify-end gap-3 mt-8">
           <button
             onClick={onClose}
-            className="px-5 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+            className="px-5 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
           >
             Cancel
           </button>
           <button
             onClick={handleSave}
-            className="px-5 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 shadow-md active:scale-95 transition-all"
+            className="px-5 py-2 bg-primary text-white font-medium rounded-lg hover:bg-primary/80 shadow-md active:scale-95 transition-all cursor-pointer"
           >
             Update Booking
           </button>
