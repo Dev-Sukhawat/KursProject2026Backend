@@ -1,4 +1,6 @@
 import Highlight from "./highlights";
+import IntroVd from "../../../assets/cowork-demo.mp4"
+import IntroImg from "../../../assets/ChatGPT Image.png"
 
 export default function VideoContainer() {
   return (
@@ -15,9 +17,9 @@ export default function VideoContainer() {
           <video
             className="absolute top-0 left-0 w-full h-full object-cover"
             controls
-            poster="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1920&q=80"
+            poster={IntroImg}
           >
-            <source src="../../../assets/cowork-demo.mp4" type="video/mp4" />
+            <source src={IntroVd} type="video/mp4" />
             Your browser does not support the video tag.
           </video>
         </div>
