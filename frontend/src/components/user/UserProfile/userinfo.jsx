@@ -4,6 +4,7 @@ import {
   Shield,
   Calendar,
   TrendingUp,
+  ClockFading,
   CheckCircle,
 } from "lucide-react";
 import { getCurrentUser } from "../../../services/authService";
@@ -14,6 +15,12 @@ export default function ProfileStats({ bookings }) {
     return <div className="p-4 text-gray-500">Loading stats...</div>;
   }
   const userBookings = bookings;
+
+const activeBookings = userBookings.filter((b) =>
+  b.status === "active" &&
+  new Date(b.startDate) >= new Date() &&
+  new Date(b.endDate) >= new Date()
+).length;
 
   const upcomingBookings = userBookings.filter(
     (b) => b.status === "active" && new Date(b.startDate) >= new Date(),
@@ -106,7 +113,18 @@ export default function ProfileStats({ bookings }) {
           </div>
 
           {/* Sub Stats Grid */}
-          <div className="grid grid-cols-2 gap-4 pt-2">
+          <div className="grid grid-cols-3 gap-4 pt-2">
+            <div className="p-4 bg-primary/85 rounded-2xl border border-primary/50">
+              <div className="flex items-center gap-2 mb-2 text-primary-foreground/90">
+                <ClockFading  className="w-4 h-4" />
+                <span className="text-[10px] font-black uppercase">
+                  Active
+                </span>
+              </div>
+              <p className="text-2xl font-black text-primary-foreground/90 leading-none">
+                {activeBookings}
+              </p>
+            </div>
             {/* Upcoming Box */}
             <div className="p-4 bg-emerald-50 rounded-2xl border border-emerald-100/50">
               <div className="flex items-center gap-2 mb-2 text-emerald-600">

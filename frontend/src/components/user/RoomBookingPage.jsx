@@ -68,10 +68,8 @@ export default function RoomBookingPage() {
 
     try {
       await addBooking(finalBookingPayload);
-      console.log("Booking saved:", finalBookingPayload);
       setIsModalOpen(false);
       setSelectedRoom(null);
-      // window.location.reload();
     } catch (err) {
       if (err.message.includes("already booked")) {
         setBookingError("This room is already booked for the selected time.");
