@@ -73,11 +73,11 @@ export const usersService = {
 
 export const roomService = {
   async getAll() {
-    const response = await fetch(`${ROOMS_BASE_URL}/rooms`, { headers: getHeaders() });
+    const response = await fetch(`${ROOMS_BASE_URL}`, { headers: getHeaders() });
     return handleResponse(response);
   },
   async create(roomData) {
-    const response = await fetch(`${ROOMS_BASE_URL}/rooms`, {
+    const response = await fetch(`${ROOMS_BASE_URL}`, {
       method: "POST",
       headers: getHeaders(),
       body: JSON.stringify(roomData),
@@ -85,7 +85,7 @@ export const roomService = {
     return handleResponse(response);
   },
   async update(id, updates) {
-    const response = await fetch(`${ROOMS_BASE_URL}/rooms/${id}`, {
+    const response = await fetch(`${ROOMS_BASE_URL}/${id}`, {
       method: "PUT",
       headers: getHeaders(),
       body: JSON.stringify(updates),
@@ -93,7 +93,7 @@ export const roomService = {
     return handleResponse(response);
   },
   async delete(id) {
-    const response = await fetch(`${ROOMS_BASE_URL}/rooms/${id}`, {
+    const response = await fetch(`${ROOMS_BASE_URL}/${id}`, {
       method: "DELETE",
       headers: getHeaders(),
     });
@@ -104,11 +104,11 @@ export const roomService = {
 // Boknings-services (CRUD)
 export const bookingService = {
   async getAll() {
-    const response = await fetch(`${BOOKINGS_BASE_URL}/bookings`, { headers: getHeaders() });
+    const response = await fetch(`${BOOKINGS_BASE_URL}`, { headers: getHeaders() });
     return handleResponse(response);
   },
   async getByUser(userId) {
-    const response = await fetch(`${BOOKINGS_BASE_URL}/bookings/${userId}`, {
+    const response = await fetch(`${BOOKINGS_BASE_URL}/${userId}`, {
       headers: getHeaders()
     });
     return handleResponse(response);
@@ -126,13 +126,13 @@ export const bookingService = {
     params.append("endDate", endDate);
     if (excludeId) params.append("excludeId", excludeId);
 
-    const response = await fetch(`${BOOKINGS_BASE_URL}/bookings/availability?${params.toString()}`, {
+    const response = await fetch(`${BOOKINGS_BASE_URL}/availability?${params.toString()}`, {
       headers: getHeaders()
     });
     return handleResponse(response);
   },
   async create(bookingData) {
-    const response = await fetch(`${BOOKINGS_BASE_URL}/bookings`, {
+    const response = await fetch(`${BOOKINGS_BASE_URL}`, {
       method: "POST",
       headers: getHeaders(),
       body: JSON.stringify(bookingData),
@@ -140,7 +140,7 @@ export const bookingService = {
     return handleResponse(response);
   },
   async update(id, updates) {
-    const response = await fetch(`${BOOKINGS_BASE_URL}/bookings/${id}`, {
+    const response = await fetch(`${BOOKINGS_BASE_URL}/${id}`, {
       method: "PUT",
       headers: getHeaders(),
       body: JSON.stringify(updates),
@@ -148,7 +148,7 @@ export const bookingService = {
     return handleResponse(response);
   },
   async delete(id) {
-    const response = await fetch(`${BOOKINGS_BASE_URL}/bookings/${id}`, {
+    const response = await fetch(`${BOOKINGS_BASE_URL}/${id}`, {
       method: "DELETE",
       headers: getHeaders(),
     });
