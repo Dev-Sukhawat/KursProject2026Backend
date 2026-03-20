@@ -1,6 +1,7 @@
 import express from "express";
 import { supabase } from "../config/supabaseClient.js";
 import logger from "../utils/logger.js";
+import { io} from "../server.js";
 
 const router = express.Router();
 
@@ -9,7 +10,7 @@ const router = express.Router();
 // ==========================================
 
 // READ ALL
-router.get("/bookings", async (req, res) => {
+router.get("/", async (req, res) => {
     try {
         const { data, error } = await supabase
             .from('bookings')
@@ -46,7 +47,7 @@ router.get("/bookings", async (req, res) => {
 });
 
 // CREATE BOOKING
-router.post("/bookings", async (req, res) => {
+router.post("/", async (req, res) => {
     const { user_id, room_id, start_date, end_date } = req.body;
     try {
         const { data, error } = await supabase
@@ -58,7 +59,17 @@ router.post("/bookings", async (req, res) => {
                 end_date: new Date(end_date).toISOString(),
                 status: 'active'
             }])
-            .select()
+            .select(`
+                id,
+                status,
+                start_date,
+                end_date,
+                user_id,
+                room_id,
+                created_at,
+                profiles (full_name),
+                rooms (name)
+            `)
             .single();
 
         if (error) {
@@ -68,8 +79,20 @@ router.post("/bookings", async (req, res) => {
             }
             throw error;
         }
+
+        const formatted = {
+            ...data,
+            userName: data.profiles?.full_name || "Unknown User",
+            roomName: data.rooms?.name || "Unknown Room",
+            startDate: data.start_date,
+            endDate: data.end_date,
+        };
+
+        console.log(formatted);
+
         logger.info(`Booking created: ${data.id}`);
-        res.status(201).json(data);
+        io.emit("booking:created", formatted);
+        res.status(201).json(formatted);
     } catch (err) {
         logger.error(`Failed to create booking - ${err.message}`);
         res.status(500).json({ error: err.message });
@@ -77,7 +100,7 @@ router.post("/bookings", async (req, res) => {
 });
 
 // Read specific booking
-router.get("/bookings/availability", async (req, res) => {
+router.get("/availability", async (req, res) => {
     const { roomId, startDate, endDate, excludeId } = req.query;
 
     if (!roomId || !startDate || !endDate) {
@@ -115,7 +138,7 @@ router.get("/bookings/availability", async (req, res) => {
 });
 
 // READ specific booking via ID
-router.get("/bookings/:userId", async (req, res) => {
+router.get("/:userId", async (req, res) => {
     const { userId } = req.params;
     try {
         const { data, error } = await supabase
@@ -153,7 +176,7 @@ router.get("/bookings/:userId", async (req, res) => {
 });
 
 // UPDATE BOOKING
-router.put("/bookings/:id", async (req, res) => {
+router.put("/:id", async (req, res) => {
     const { id } = req.params;
     const updates = req.body;
 
@@ -174,6 +197,7 @@ router.put("/bookings/:id", async (req, res) => {
         }));
 
         logger.info(`Booking updated: ${id}`);
+        io.emit("booking:updated", { id, updates });
         res.json(formatted);
     } catch (err) {
         logger.error(`Failed to update booking ${id} - ${err.message}`, { err });
@@ -182,12 +206,13 @@ router.put("/bookings/:id", async (req, res) => {
 });
 
 // DELETE BOOKING
-router.delete("/bookings/:id", async (req, res) => {
+router.delete("/:id", async (req, res) => {
     const { id } = req.params;
     try {
         const { error } = await supabase.from('bookings').delete().eq('id', id);
         if (error) throw error;
         logger.info(`Booking cancelled: ${id}`);
+        io.emit("booking:deleted", { id });
         res.json({ message: "Booking cancelled" });
     } catch (err) {
         logger.error(`Failed to cancel booking ${id}: ${err.message}`, { err });

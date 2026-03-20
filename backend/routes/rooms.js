@@ -1,6 +1,7 @@
 import express from "express";
 import { supabase } from "../config/supabaseClient.js";
 import logger from "../utils/logger.js";
+import {io} from "../server.js";
 
 const router = express.Router();
 
@@ -9,7 +10,7 @@ const router = express.Router();
 // ==========================================
 
 // READ ALL
-router.get("/rooms", async (req, res) => {
+router.get("/", async (req, res) => {
     try {
         const { data, error } = await supabase
             .from('rooms')
@@ -25,12 +26,13 @@ router.get("/rooms", async (req, res) => {
 });
 
 // CREATE ROOM
-router.post("/rooms", async (req, res) => {
+router.post("/", async (req, res) => {
     const { name, type, capacity, available } = req.body;
     try {
         const { data, error } = await supabase.from('rooms').insert([{ name, type, capacity, available }]).select();
         if (error) throw error;
         logger.info(`Room created: ${data[0].name}`);
+        io.emit("room:created", data[0]);
         res.status(201).json(data[0]);
     } catch (err) {
         logger.error(`Failed to create room - ${err.message}`);
@@ -39,13 +41,14 @@ router.post("/rooms", async (req, res) => {
 });
 
 // UPDATE ROOM
-router.put("/rooms/:id", async (req, res) => {
+router.put("/:id", async (req, res) => {
     const { id } = req.params;
     const updates = req.body;
     try {
         const { data, error } = await supabase.from('rooms').update(updates).eq('id', id).select();
         if (error) throw error;
         logger.info(`Room updated: ${id}`);
+        io.emit("room:updated", data[0]);
         res.json(data[0]);
     } catch (err) {
         logger.error(`Failed to update room - ${err.message}`);
@@ -54,12 +57,13 @@ router.put("/rooms/:id", async (req, res) => {
 });
 
 // DELETE ROOM
-router.delete("/rooms/:id", async (req, res) => {
+router.delete("/:id", async (req, res) => {
     const { id } = req.params;
     try {
         const { error } = await supabase.from('rooms').delete().eq('id', id);
         if (error) throw error;
         logger.info(`Room deleted: ${id}`);
+        io.emit("room:deleted", {id});
         res.json({ message: "Room deleted" });
     } catch (err) {
         logger.error(`Failed to delete room - ${err.message}`);

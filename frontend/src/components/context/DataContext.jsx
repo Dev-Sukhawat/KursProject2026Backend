@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { roomService, bookingService, usersService } from "../../services/api";
-
+import socket from "../../services/socket"
 const DataContext = createContext();
 
 export const useData = () => {
@@ -40,6 +40,48 @@ export const DataProvider = ({ children }) => {
     };
 
     fetchInitialData();
+  }, []);
+
+  useEffect(() => {
+    // Rooms
+    socket.on("room:created", (newRoom) => {
+      setRooms((prev) => [...prev, newRoom]);
+    });
+
+    socket.on("room:updated", (updatedRoom) => {
+      setRooms((prev) =>
+        prev.map((r) => (r.id === updatedRoom.id ? updatedRoom : r))
+      );
+    });
+
+    socket.on("room:deleted", ({ id }) => {
+      setRooms((prev) => prev.filter((r) => r.id !== id));
+      setBookings((prev) => prev.filter((b) => b.room_id !== id));
+    });
+
+    // Bookings
+    socket.on("booking:created", (newBooking) => {
+      setBookings((prev) => [newBooking, ...prev]);
+    });
+
+    socket.on("booking:updated", (updatedBooking) => {
+      setBookings((prev) =>
+        prev.map((b) => (b.id === updatedBooking.id ? updatedBooking : b))
+      );
+    });
+
+    socket.on("booking:deleted", ({ id }) => {
+      setBookings((prev) => prev.filter((b) => b.id !== id));
+    });
+
+    return () => {
+      socket.off("room:created");
+      socket.off("room:updated");
+      socket.off("room:deleted");
+      socket.off("booking:created");
+      socket.off("booking:updated");
+      socket.off("booking:deleted");
+    };
   }, []);
 
   // ==========================================
@@ -170,4 +212,4 @@ const isRoomAvailable = async (
       {children}
     </DataContext.Provider>
   );
-};;
+};

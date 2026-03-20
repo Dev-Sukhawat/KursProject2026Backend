@@ -8,22 +8,15 @@ import { BookingEditModal } from "../ui/bookings/BookingModal";
 import { getCurrentUser } from "../../services/authService";
 
 export default function Dashbord() {
-  const { rooms, getUserBookings, deleteBooking, updateBooking } = useData();
+  const { rooms, bookings, deleteBooking, updateBooking } = useData();
   const user = getCurrentUser();
 
-  const [userBookings, setUserBookings] = useState([]);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [bookingToDelete, setBookingToDelete] = useState(null);
   const [editingBooking, setEditingBooking] = useState(null);
 
-  useEffect(() => {
-    if (user?.id) {
-      getUserBookings(user.id).then((data) => {
-        setUserBookings(data ?? []);
-      });
-    }
-  }, [user?.id]);
+  const userBookings = bookings.filter((b) => b.user_id === user?.id);
 
   const handleDeleteTrigger = (id) => {
     setBookingToDelete(id);
@@ -44,7 +37,7 @@ export default function Dashbord() {
     if (booking) {
       setEditingBooking({
         ...booking,
-        room: rooms.find((r) => r.id === booking.roomId),
+        room: rooms.find((r) => r.id === booking.room_id),
       });
       setIsEditModalOpen(true);
     }
