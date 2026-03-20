@@ -110,11 +110,12 @@ export default function AuthSection() {
 
                 <form onSubmit={handleLogin} className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium mb-1">
+                    <label htmlFor="loginEmail" className="block text-sm font-medium mb-1">
                       Email
                     </label>
                     <input
                       type="email"
+                      id="loginEmail"
                       placeholder="you@example.com"
                       autoComplete="email"
                       value={loginEmail}
@@ -125,11 +126,12 @@ export default function AuthSection() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium mb-1">
+                    <label htmlFor="loginPassword" className="block text-sm font-medium mb-1">
                       Password
                     </label>
                     <input
                       type="password"
+                      id="loginPassword"
                       placeholder="••••••••"
                       autoComplete="current-password"
                       value={loginPassword}
@@ -176,11 +178,12 @@ export default function AuthSection() {
 
                 <form onSubmit={handleRegister} className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium mb-1">
+                    <label htmlFor="registerName" className="block text-sm font-medium mb-1">
                       Full Name
                     </label>
                     <input
                       type="text"
+                      id="registerName"
                       placeholder="John Doe"
                       autoComplete="name"
                       value={registerName}
@@ -191,11 +194,12 @@ export default function AuthSection() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium mb-1">
+                    <label htmlFor="registerEmail" className="block text-sm font-medium mb-1">
                       Email
                     </label>
                     <input
                       type="email"
+                      id="registerEmail"
                       placeholder="you@example.com"
                       autoComplete="email"
                       value={registerEmail}
@@ -206,11 +210,12 @@ export default function AuthSection() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium mb-1">
+                    <label htmlFor="registerPassword" className="block text-sm font-medium mb-1">
                       Password
                     </label>
                     <input
                       type="password"
+                      id="registerPassword"
                       placeholder="••••••••"
                       autoComplete="new-password"
                       value={registerPassword}
