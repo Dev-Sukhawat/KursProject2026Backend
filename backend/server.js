@@ -1,6 +1,8 @@
 import express from "express";
 import cors from "cors";
 import authRoutes from "./routes/auth.js";
+import roomsRouter from "./routes/rooms.js";
+import bookingsRouter from "./routes/bookings.js";
 import logger from "./utils/logger.js";
 
 const app = express();
@@ -22,6 +24,8 @@ app.use((req, res, next) => {
 
 // Routes
 app.use("/api/auth", authRoutes);
+app.use("/api/rooms", roomsRouter);
+app.use("/api/bookings", bookingsRouter);
 
 app.get("/api", (req, res) => {
     res.send(`Server is running on http://localhost:${port}`);
