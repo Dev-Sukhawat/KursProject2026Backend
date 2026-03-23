@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import NavButton from "../ui/navbar/NavButton";
 import { getCurrentUser, logoutUser } from "../../services/authService";
+import NotificationBell from "../ui/NotificationBell";
 import {
   LogOut,
   LayoutDashboard,
@@ -116,6 +117,7 @@ export default function Navbar({ children }) {
                 <LogOut size={16} />
                 Logout
               </button>
+              <NotificationBell />
             </div>
           </div>
         </div>
