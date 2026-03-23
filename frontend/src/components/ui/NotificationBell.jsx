@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Bell, X, CheckCheck } from "lucide-react";
 import { useNotifications } from "../../components/context/NotificationContext";
+import { useNavigate } from "react-router-dom";
 
 export default function NotificationBell() {
   const {
@@ -12,6 +13,7 @@ export default function NotificationBell() {
   } = useNotifications();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const navigate = useNavigate();
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -23,6 +25,14 @@ export default function NotificationBell() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  const handleDoubleClick = (n) => {
+    markAsRead(n.id);
+    if (n.type === "room:created") {
+      navigate("/book");
+    }
+    setIsOpen(false);
+  };
 
   return (
     <div className="relative" ref={dropdownRef}>
@@ -67,13 +77,14 @@ export default function NotificationBell() {
                 <div
                   key={n.id}
                   onClick={() => markAsRead(n.id)}
+                  onDoubleClick={() => handleDoubleClick(n)}
                   className={`flex items-start justify-between gap-2 px-4 py-3 border-b border-gray-50 cursor-pointer hover:bg-gray-50 transition-colors ${
                     !n.read ? "bg-blue-50/50" : ""
                   }`}
                 >
                   <div className="flex-1">
                     <p
-                      className={`text-sm ${!n.read ? "font-semibold text-gray-900" : "text-gray-600"}`}
+                      className={`text-sm ${!n.read ? "font-semibold text-gray-900" : "text-gray-600"} capitalize`}
                     >
                       {n.message}
                     </p>

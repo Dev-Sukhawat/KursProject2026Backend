@@ -15,7 +15,8 @@ router.get("/", async (req, res) => {
         const { data, error } = await supabase
             .from('rooms')
             .select('*')
-            .order('capacity', { ascending: true });
+            .order('capacity', { ascending: true })
+            .order('name', { ascending: true });
         if (error) throw error;
         logger.info(`Fetched ${data.length} rooms`);
         res.status(200).json(data);
@@ -29,7 +30,7 @@ router.get("/", async (req, res) => {
 router.post("/", async (req, res) => {
     const { name, type, capacity, available } = req.body;
     try {
-        const { data, error } = await supabase.from('rooms').insert([{ name, type, capacity, available }]).select();
+        const { data, error } = await supabase.from('rooms').insert([{ name: name.split(" ").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" "), type, capacity, available }]).select();
         if (error) throw error;
         logger.info(`Room created: ${data[0].name}`);
         io.emit("room:created", data[0]);

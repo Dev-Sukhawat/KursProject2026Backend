@@ -45,12 +45,21 @@ export const DataProvider = ({ children }) => {
   useEffect(() => {
     // Rooms
     socket.on("room:created", (newRoom) => {
-      setRooms((prev) => [...prev, newRoom]);
+      setRooms((prev) =>
+        [...prev, newRoom].sort((a, b) => {
+          if (a.capacity !== b.capacity) {
+            return a.capacity - b.capacity;
+          }
+          return a.name.localeCompare(b.name);
+        }),
+      );
     });
 
     socket.on("room:updated", (updatedRoom) => {
       setRooms((prev) =>
-        prev.map((r) => (r.id === updatedRoom.id ? updatedRoom : r))
+        prev
+          .map((r) => (r.id === updatedRoom.id ? updatedRoom : r))
+          .sort((a, b) => a.capacity - b.capacity),
       );
     });
 
