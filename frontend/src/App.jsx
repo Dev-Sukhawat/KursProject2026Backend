@@ -11,6 +11,7 @@ import UserProfile from "./pages/user/UserProfile";
 import ProtectedRoute from "./components/utils/ProtectedRoute";
 import { DataProvider } from "./components/context/DataContext";
 import AutoTopScroller from "./services/AutoTopScroller";
+import NotFound from "./pages/NotFoundPage";
 
 function App() {
   return (
@@ -82,6 +83,7 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </DataProvider>
   );
