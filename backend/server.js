@@ -24,7 +24,10 @@ const isDev = process.env.NODE_ENV !== "production";
 
 
 const corsOptions = {
-    origin: ["http://localhost:5173"],
+  origin: [
+    "http://localhost:5173",
+    "http://localhost:4173",
+  ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true
 };
@@ -74,7 +77,10 @@ app.use((req, res, next) => {
 
 const io = new Server(httpServer, {
   cors: {
-    origin: "http://localhost:5173",
+    origin: [
+      "http://localhost:5173",
+      "http://localhost:4173",
+    ],
     methods: ["GET", "POST"]
   }
 });
