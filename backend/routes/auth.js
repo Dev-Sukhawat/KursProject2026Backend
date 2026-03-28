@@ -82,7 +82,7 @@ router.post("/login", async (req, res) => {
     try {
         const { data: user, error } = await supabase
             .from('profiles')
-            .select('*')
+            .select('id, full_name, email, role, password')
             .eq('email', formattedEmail)
             .single();
 
