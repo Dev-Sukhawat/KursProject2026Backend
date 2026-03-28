@@ -6,10 +6,22 @@ import bookingsRouter from "./routes/bookings.js";
 import logger from "./utils/logger.js";
 import {createServer} from "http";
 import {Server} from "socket.io";
+import helmet from "helmet";
+import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 const app = express();
 const httpServer = createServer(app);
-const port = 8080;
+const port = process.env.PORT || 8080;
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+dotenv.config({ path: path.join(__dirname, "../.env") });
+
+const isDev = process.env.NODE_ENV !== "production";
+
 
 const corsOptions = {
     origin: ["http://localhost:5173"],
@@ -18,6 +30,41 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+app.use(helmet({
+  // Explicit X-Frame-Options: DENY
+  xFrameOptions: { action: "deny" },
+
+  crossOriginResourcePolicy: { policy: "cross-origin" },
+
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: isDev
+        ? ["'self'", "'unsafe-eval'"]
+        : ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      imgSrc: ["'self'", "data:"],
+      connectSrc: isDev
+        ? ["'self'", "http://localhost:5173", "http://localhost:8080", "ws://localhost:8080", "ws://localhost:5173"]
+        : ["'self'", "https://mydomain.com", "wss://mydomain.com"],
+      objectSrc: ["'none'"],
+      // frame-ancestors as backup alongside X-Frame-Options
+      frameAncestors: ["'none'"],
+
+      formAction: ["'self'"],
+      baseUri: ["'self'"],
+      framesSrc: ["'none'"],
+    }
+  }
+}));
+
+// Explicit middleware to guarantee headers on EVERY response
+app.use((req, res, next) => {
+  res.setHeader("X-Frame-Options", "DENY");
+  res.setHeader("Content-Security-Policy", "frame-ancestors 'none'");
+  next();
+});
+
 app.use(express.json());
 
 app.use((req, res, next) => {
