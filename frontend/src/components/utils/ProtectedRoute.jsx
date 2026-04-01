@@ -10,24 +10,34 @@ export default function ProtectedRoute({ children, role }) {
 
   try {
     const decoded = jwtDecode(token);
-
     const currentTime = Date.now() / 1000;
+
     if (decoded.exp < currentTime) {
-      console.warn("Token has expired");
       localStorage.removeItem("token");
+      sessionStorage.setItem(
+        "redirectMessage",
+        "Your session has expired. Please log in again.",
+      );
       return <Navigate to="/" replace />;
     }
 
     if (role && decoded.role !== role) {
-      console.error(`Access denied: Requires ${role} role`);
-      return <Navigate to="/" replace />;
+      sessionStorage.setItem(
+        "redirectMessage",
+        "You do not have permission to access this page.",
+      );
+      return (
+        <Navigate to={decoded.role === "admin" ? "/admin" : "/user"} replace />
+      );
     }
 
     return children;
-  } catch (error) {
-    // Om token är trasig eller ogiltig
-    console.error("Invalid token:", error);
+  } catch {
     localStorage.removeItem("token");
+    sessionStorage.setItem(
+      "redirectMessage",
+      "Your session has expired. Please log in again.",
+    );
     return <Navigate to="/" replace />;
   }
 }

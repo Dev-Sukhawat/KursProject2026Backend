@@ -9,21 +9,21 @@ export function logoutUser() {
 // Get current logged in user
 export function getCurrentUser() {
     const token = localStorage.getItem("token");
-
     if (!token) return null;
 
     try {
         const decoded = jwtDecode(token);
-
         const currentTime = Date.now() / 1000;
+
+        // Just return null - let ProtectedRoute handle the redirect + message
         if (decoded.exp < currentTime) {
             localStorage.removeItem("token");
-            window.location.href = "/";
             return null;
         }
 
         return decoded;
-    } catch (error) {
+    } catch {
+        localStorage.removeItem("token");
         return null;
     }
 }
