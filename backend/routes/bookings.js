@@ -2,6 +2,7 @@ import express from "express";
 import { supabase } from "../config/supabaseClient.js";
 import logger from "../utils/logger.js";
 import { io} from "../server.js";
+import cache from "../config/cache.js";
 
 const router = express.Router();
 
@@ -12,6 +13,11 @@ const router = express.Router();
 // READ ALL
 router.get("/", async (req, res) => {
     try {
+        const cachedBookings = cache.get("bookings");
+        if (cachedBookings) {
+            logger.info("Bookings fetched from cache");
+            return res.status(200).json(cachedBookings);
+        }
         const { data, error } = await supabase
             .from('bookings')
             .select(`
@@ -38,7 +44,7 @@ router.get("/", async (req, res) => {
             startDate: start_date,
             endDate: end_date,
         }));
-
+        cache.set("bookings", formatted);
         res.json(formatted);
     } catch (err) {
         logger.error(`Failed to fetch bookings - ${err.message}`);
@@ -88,9 +94,8 @@ router.post("/", async (req, res) => {
             endDate: data.end_date,
         };
 
-        console.log(formatted);
-
         logger.info(`Booking created: ${data.id}`);
+        cache.del("bookings");
         io.emit("booking:created", formatted);
         res.status(201).json(formatted);
     } catch (err) {
@@ -197,6 +202,7 @@ router.put("/:id", async (req, res) => {
         }));
 
         logger.info(`Booking updated: ${id}`);
+        cache.del("bookings");
         io.emit("booking:updated", { id, updates });
         res.json(formatted);
     } catch (err) {
@@ -212,6 +218,7 @@ router.delete("/:id", async (req, res) => {
         const { error } = await supabase.from('bookings').delete().eq('id', id);
         if (error) throw error;
         logger.info(`Booking cancelled: ${id}`);
+        cache.del("bookings");
         io.emit("booking:deleted", { id });
         res.json({ message: "Booking cancelled" });
     } catch (err) {
