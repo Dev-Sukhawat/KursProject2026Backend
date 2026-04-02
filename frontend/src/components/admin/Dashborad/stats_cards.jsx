@@ -3,15 +3,14 @@ import { Building2, Calendar, Users } from "lucide-react";
 
 export default function Statscard({rooms, bookings}) {
   const totalRooms = rooms.length;
-  const availableRooms = rooms.filter(
-    (room) => room.available
-  ).length;
+  const now = new Date();
+  const availableRooms = rooms.filter((room) => room.available).length;
   const activeBookings = bookings.filter(
-    (booking) => booking.status === "active"
+    (booking) => booking.status === "active",
   ).length;
-  const upcomingBookings = bookings.filter(
-    b => b.status === 'active' && b.startDate >= new Date()
-  ).length;
+  const upcomingBookings = bookings
+    .filter((b) => b.status === "active" && new Date(b.startDate) > now)
+    .sort((a, b) => new Date(a.startDate) - new Date(b.startDate)).length;
   return (
     <>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
