@@ -20,7 +20,23 @@ export const NotificationProvider = ({ children }) => {
       });
     });
 
-    return () => socket.off("room:created");
+    socket.on("room:updated", (newRoom) => {
+      if (newRoom.available == true) {
+        addNotification({
+          id: crypto.randomUUID(),
+          type: "room:updated",
+          message: `Room updated: ${newRoom.name}`,
+          room: newRoom,
+          read: false,
+          createdAt: new Date(),
+        });
+      }
+    });
+
+    return () => {
+      socket.off("room:created");
+      socket.off("room:updated");
+    };
   }, []);
 
   const addNotification = (notification) => {

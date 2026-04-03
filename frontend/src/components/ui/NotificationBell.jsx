@@ -28,7 +28,7 @@ export default function NotificationBell() {
 
   const handleDoubleClick = (n) => {
     markAsRead(n.id);
-    if (n.type === "room:created") {
+    if (n.type === "room:created" || n.type === "room:updated") {
       navigate("/book");
     }
     setIsOpen(false);
