@@ -1,108 +1,96 @@
-# Coworking Space Booking Platform (Kurs Project 2026)
+# 🏢 CoWork — Coworking Space Booking Platform 2026
 
-A high-performance, full-stack booking platform designed for Coworking Spaces. This application allows users to register, log in, and reserve workspaces or conference rooms in real-time. It features a modern decoupled architecture with a Node.js/Express backend and a React/Vite frontend.
-
----
-
-## 📂 Repository Structure
-
-### 🏗️ Backend (`/backend`)
-The server-side application manages data persistence, real-time events, and security.
-* **`server.js`**: Core entry point for the Express application.
-* **`config/`**: Configuration for **Supabase** (Database).
-* **`middleware/`**: Custom logic for **Auth** (JWT validation) and Role-Based Access Control (RBAC).
-* **`routes/`**: Modular API endpoints for Auth, Rooms, and Bookings.
-* **`utils/`**: Helper functions for **Socket.io** (real-time updates) and **Winston** (logging).
-
-### 💻 Frontend (`/frontend`)
-A high-performance Single Page Application (SPA) built with React and Vite.
-* **`src/pages/`**: Main views for Admin Management and User Dashboards.
-* **`src/components/`**: Modular components for Admin controls, User forms, and UI elements.
-* **`src/context/`**: Global state management for Data and Real-time Notifications.
-* **`src/services/`**: API abstraction layer (Axios) and Socket.io client initialization.
+> ⚡ A high-performance, full-stack booking platform for modern workspaces, featuring real-time availability and secure PostgreSQL-level reservation logic.
 
 ---
 
-## 🚀 Tech Stack
+## 📚 Table of Contents
 
-* **Backend:** Node.js with Express.js.
-* **Frontend:** React (Vite) with Context API.
-* **Database:** **Supabase (PostgreSQL)**.
-* **Authentication:** JWT (JSON Web Tokens) and bcrypt.
-* **Real-time Communication:** WebSocket via **Socket.io** for instant notifications.
-* **Database Security:** Advanced PostgreSQL constraints to prevent overlapping bookings.
+1. [🧩 Overview](#-overview)
+2. [📦 Tech Stack](#-tech-stack)
+3. [✨ Functional Requirements](#-functional-requirements)
+4. [📡 API Specification](#-api-specification)
+5. [🗄️ Database Schema](#️-database-schema)
+6. [📁 Directory Structure](#-directory-structure)
+7. [🎨 Visual Preview](#-visual-preview)
+8. [🧰 Installation & Setup](#-installation--setup)
+9. [👨‍💻 Author](#-author)
+10. [📜 License](#-license)
+
+---
+
+## 🧩 Overview
+
+CoWork is a professional booking solution designed for coworking spaces. It bridges the gap between sleek user experience and robust data integrity. By utilizing Socket.io for real-time notifications and PostgreSQL GIST constraints, it ensures that a desk or conference room is never double-booked, providing a seamless flow for both users and administrators.
+
+---
+
+## 📦 Tech Stack
+
+### 🖥️ Frontend
+
+- **React + Vite** — Lightning-fast development and optimized production builds.
+- **Context API** — Centralized state management for user sessions and real-time alerts.
+- **Axios & Socket.io Client** — Seamless data fetching and live event listening.
+
+### ⚙️ Backend
+
+- **Node.js & Express** — Scalable RESTful API architecture.
+- **JWT & bcrypt** — Industry-standard security for authentication and password hashing.
+- **Supabase (PostgreSQL)** — Relational data storage with advanced exclusion constraints.
 
 ---
 
 ## ✨ Functional Requirements
 
-### 1. User Roles
-* **Standard User:** Register, login, view personal bookings, and manage own reservations.
-* **Administrator:** Manage rooms, view all system-wide users/bookings, and handle account management.
+### 👥 User Roles
 
-### 2. Core Functionality
-* **Authentication:** Secure identity management via JWT.
-* **Room Management:** Admins define Name, Capacity, and Type (workspace/conference).
-* **Booking Validation:** The system utilizes a PostgreSQL `EXCLUDE` constraint to ensure no two active bookings overlap for the same room.
-* **Notifications:** Real-time updates push status changes to the frontend via WebSockets.
+- **Standard User** — Browse available rooms, manage personal dashboard, and create/cancel reservations.
+- **Administrator** — Full control over room inventory, view system-wide analytics, and manage user accounts.
 
----
+### 🛠️ Core Features
 
-## 📡 API Specification
-
-### Authentication
-* `POST /register` - Register a new user profile.
-* `POST /login` - Login and receive a JWT token.
-
-### Room Management (Admin Only)
-* `POST /rooms` - Create a new room.
-* `GET /rooms` - Fetch all rooms.
-* `PUT /rooms/:id` - Update room details.
-* `DELETE /rooms/:id` - Delete a room.
-
-### Bookings
-* `POST /bookings` - Create a new booking (validated by DB constraints).
-* `GET /bookings` - Fetch user's bookings (User) or all bookings (Admin).
-* `PUT /bookings/:id` - Update booking status or time.
-* `DELETE /bookings/:id` - Cancel or remove a booking.
-
-## 🗄️ Database Schema (PostgreSQL)
-
-### `profiles`
-| Column | Type | Default |
-| :--- | :--- | :--- |
-| `id` | UUID | `gen_random_uuid()` |
-| `full_name` | Text | Required |
-| `email` | Text | Required |
-| `role` | Text | 'user' |
-| `created_at` | timestamptz | '(now() AT TIME ZONE 'utc')' |
-
-### `rooms`
-| Column | Type | Default |
-| :--- | :--- | :--- |
-| `id` | UUID | `gen_random_uuid()` |
-| `name` | Text | Required |
-| `type` | Text | Required |
-| `capacity` | Integer | Required |
-| `available` | Boolean | `true` |
-
-### `bookings`
-| Column | Type | Default |
-| :--- | :--- | :--- |
-| `id` | UUID | `gen_random_uuid()` |
-| `user_id` | UUID | FK to `profiles.id` |
-| `room_id` | UUID | FK to `rooms.id` |
-| `start_date` | TIMESTAMPTZ | Required |
-| `end_date` | TIMESTAMPTZ | Required |
-| `status` | Text | 'active' |
-
-> **Note:** This table includes a `no_overlapping_bookings` constraint using GIST and `tstzrange` to prevent double-bookings automatically at the database level.
+- **Smart Validation** — Uses `tstzrange` to prevent overlapping bookings directly at the database level.
+- **Real-time Updates** — Users see room status changes immediately without refreshing the page via WebSockets.
 
 ---
 
-## 🛠️ Installation & Setup
+## 📁 Directory Structure
 
-### 1. Backend
+```
+KursProject2026Backend/
+├── backend/
+│   ├── config/          # Supabase & DB connection
+│   ├── middleware/      # JWT Auth & RBAC logic
+│   ├── routes/          # API Endpoint definitions
+│   └── server.js        # Entry point
+└── frontend/
+    ├── src/
+    │   ├── components/  # Reusable UI & Admin tools
+    │   ├── context/     # Global state & Sockets
+    │   ├── pages/       # Dashboard & Login views
+    │   └── services/    # API & Socket initialization
+```
+
+---
+
+## 🎨 Visual Preview
+
+### 🏠 HomePage
+![HomePage Interface](frontend/src/assets/localhost_5173_.png)
+
+### 📅 User Reservations
+![User Dashboard](frontend/src/assets/localhost_5173_book.png)
+
+### 🔐 Admin Management
+![Admin Panel](frontend/src/assets/localhost_5173_%20admin.png)
+
+---
+
+## 🧰 Installation & Setup
+
+### 1️⃣ Setup Backend
+
 ```bash
 cd backend
 npm install
@@ -110,7 +98,8 @@ npm install
 npm start
 ```
 
-### 2. Frontend
+### 2️⃣ Setup Frontend
+
 ```bash
 cd frontend
 npm install
@@ -118,4 +107,22 @@ npm run dev
 ```
 
 ---
+
+## 👨‍💻 Author
+
+**Sukhawat Charoenchit**
+👨‍💻 Full Stack Dev Student &nbsp;|&nbsp; 🏫 Företagsuniversitetet &nbsp;|&nbsp; 📍 Sthlm
+
+✨ *Exploring the intersection of real-time systems and clean UI architecture.*
+
+---
+
+## 📜 License
+
+This project is licensed under the **MIT License**.
+
 © 2026 dev-sukhawat
+
+---
+
+💫 *Thanks for checking out CoWork. Keep building and stay creative!* 🚀
