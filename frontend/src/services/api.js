@@ -15,14 +15,28 @@ const getHeaders = () => {
 // Helper method for handling responses and errors centrally
 const handleResponse = async (response) => {
   const data = await response.json();
+
+  if (response.status === 401 || response.status === 403) {
+    const token = localStorage.getItem("token");
+
+    // Only redirect if they had a token (session expired)
+    // If no token, just throw the error normally
+    if (token) {
+      localStorage.removeItem("token");
+      sessionStorage.setItem("redirectMessage", "Your session has expired. Please log in again.");
+      window.location.href = "/";
+      return;
+    }
+  }
+
   if (!response.ok) {
     throw new Error(data.error || "Något gick fel vid API-anropet");
   }
+
   return data;
 };
 
 export const authService = {
-  // Registrera
   async register(fullName, email, password) {
     const response = await fetch(`${API_BASE_URL}/register`, {
       method: "POST",
@@ -32,7 +46,6 @@ export const authService = {
     return handleResponse(response);
   },
 
-  // Logga in
   async login(email, password) {
     const response = await fetch(`${API_BASE_URL}/login`, {
       method: "POST",
@@ -40,7 +53,6 @@ export const authService = {
       body: JSON.stringify({ email, password }),
     });
     const data = await handleResponse(response);
-
     if (data.token) {
       localStorage.setItem("token", data.token);
     }
@@ -48,7 +60,6 @@ export const authService = {
   }
 };
 
-// Users-services (CRUD)
 export const usersService = {
   async getAll() {
     const response = await fetch(`${API_BASE_URL}/users`, { headers: getHeaders() });
@@ -101,7 +112,6 @@ export const roomService = {
   }
 };
 
-// Boknings-services (CRUD)
 export const bookingService = {
   async getAll() {
     const response = await fetch(`${BOOKINGS_BASE_URL}`, { headers: getHeaders() });
@@ -114,11 +124,7 @@ export const bookingService = {
     return handleResponse(response);
   },
   async checkAvailability(roomId, startDate, endDate, excludeId = null) {
-    // Guard: don't send request if values are missing
-    if (!roomId || !startDate || !endDate) {
-      console.error("checkAvailability missing params:", { roomId, startDate, endDate });
-      return { available: false };
-    }
+    if (!roomId || !startDate || !endDate) return { available: false };
 
     const params = new URLSearchParams();
     params.append("roomId", roomId);

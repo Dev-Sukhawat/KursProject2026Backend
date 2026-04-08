@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { roomService, bookingService, usersService } from "../../services/api";
-import socket from "../../services/socket"
+import { getCurrentUser } from "../../services/authService";
+import socket from "../../services/socket";
+
 const DataContext = createContext();
 
 export const useData = () => {
@@ -17,20 +19,35 @@ export const DataProvider = ({ children }) => {
   const [users, setUsers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [fetchTrigger, setFetchTrigger] = useState(0);
 
-  // 1. Hämta all data från Backend vid start
+  const refetch = () => setFetchTrigger((prev) => prev + 1);
+
   useEffect(() => {
     const fetchInitialData = async () => {
+      const currentUser = getCurrentUser();
+      const isAdmin = currentUser?.role === "admin";
+
       try {
         setIsLoading(true);
-        const [roomsData, bookingsData, usersData] = await Promise.all([
-          roomService.getAll(),
-          bookingService.getAll(),
-          usersService.getAll(),
-        ]);
-        setRooms(roomsData);
-        setBookings(bookingsData);
-        setUsers(usersData);
+
+        if (isAdmin) {
+          const [roomsData, bookingsData, usersData] = await Promise.all([
+            roomService.getAll(),
+            bookingService.getAll(),
+            usersService.getAll(),
+          ]);
+          setRooms(roomsData);
+          setBookings(bookingsData);
+          setUsers(usersData);
+        } else if (currentUser) {
+          const [roomsData, userBookingsData] = await Promise.all([
+            roomService.getAll(),
+            bookingService.getByUser(currentUser.id),
+          ]);
+          setRooms(roomsData);
+          setBookings(userBookingsData);
+        }
       } catch (err) {
         setError("Kunde inte ladda data från servern.");
         console.error(err);
@@ -40,16 +57,17 @@ export const DataProvider = ({ children }) => {
     };
 
     fetchInitialData();
-  }, []);
+  }, [fetchTrigger]);
 
+  // Socket listeners
   useEffect(() => {
-    // Rooms
+    const currentUser = getCurrentUser();
+    const isAdmin = currentUser?.role === "admin";
+
     socket.on("room:created", (newRoom) => {
       setRooms((prev) =>
         [...prev, newRoom].sort((a, b) => {
-          if (a.capacity !== b.capacity) {
-            return a.capacity - b.capacity;
-          }
+          if (a.capacity !== b.capacity) return a.capacity - b.capacity;
           return a.name.localeCompare(b.name);
         }),
       );
@@ -68,15 +86,18 @@ export const DataProvider = ({ children }) => {
       setBookings((prev) => prev.filter((b) => b.room_id !== id));
     });
 
-    // Bookings
     socket.on("booking:created", (newBooking) => {
-      setBookings((prev) => [newBooking, ...prev]);
+      if (isAdmin || newBooking.user_id === currentUser?.id) {
+        setBookings((prev) => [newBooking, ...prev]);
+      }
     });
 
     socket.on("booking:updated", (updatedBooking) => {
-      setBookings((prev) =>
-        prev.map((b) => (b.id === updatedBooking.id ? updatedBooking : b))
-      );
+      if (isAdmin || updatedBooking.user_id === currentUser?.id) {
+        setBookings((prev) =>
+          prev.map((b) => (b.id === updatedBooking.id ? updatedBooking : b)),
+        );
+      }
     });
 
     socket.on("booking:deleted", ({ id }) => {
@@ -96,7 +117,6 @@ export const DataProvider = ({ children }) => {
   // ==========================================
   // ROOMS LOGIC (CRUD)
   // ==========================================
-
   const addRoom = async (roomData) => {
     try {
       const newRoom = await roomService.create(roomData);
@@ -124,7 +144,6 @@ export const DataProvider = ({ children }) => {
     try {
       await roomService.delete(id);
       setRooms((prev) => prev.filter((room) => room.id !== id));
-      // Vi rensar även bokningar lokalt som tillhörde rummet
       setBookings((prev) => prev.filter((b) => b.room_id !== id));
     } catch (err) {
       console.error("Fel vid borttagning av rum:", err);
@@ -144,6 +163,7 @@ export const DataProvider = ({ children }) => {
       return [];
     }
   };
+
   const addBooking = async (newBookingData) => {
     try {
       const savedBooking = await bookingService.create(newBookingData);
@@ -154,6 +174,7 @@ export const DataProvider = ({ children }) => {
       throw err;
     }
   };
+
   const updateBooking = async (id, updatedFields) => {
     try {
       const updatedBooking = await bookingService.update(id, updatedFields);
@@ -179,26 +200,25 @@ export const DataProvider = ({ children }) => {
   // ==========================================
   // UTILS / VALIDATION
   // ==========================================
-
-const isRoomAvailable = async (
-  roomId,
-  startDate,
-  endDate,
-  excludeBookingId = null,
-) => {
-  try {
-    const { available } = await bookingService.checkAvailability(
-      roomId,
-      startDate,
-      endDate,
-      excludeBookingId,
-    );
-    return available;
-  } catch (err) {
-    console.error("Fel vid tillgänglighetskoll:", err);
-    return false; // fail safe — blocks booking if check fails
-  }
-};
+  const isRoomAvailable = async (
+    roomId,
+    startDate,
+    endDate,
+    excludeBookingId = null,
+  ) => {
+    try {
+      const { available } = await bookingService.checkAvailability(
+        roomId,
+        startDate,
+        endDate,
+        excludeBookingId,
+      );
+      return available;
+    } catch (err) {
+      console.error("Fel vid tillgänglighetskoll:", err);
+      return false;
+    }
+  };
 
   return (
     <DataContext.Provider
@@ -208,6 +228,7 @@ const isRoomAvailable = async (
         users,
         isLoading,
         error,
+        refetch,
         addRoom,
         updateRoom,
         deleteRoom,

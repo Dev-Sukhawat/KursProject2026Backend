@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { authService } from "../../services/api";
+import { useData } from "../context/DataContext";
 
 export default function AuthSection() {
   const navigate = useNavigate();
+  const { refetch } = useData();
   const [activeTab, setActiveTab] = useState("login");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -21,6 +23,7 @@ export default function AuthSection() {
     setError("");
     try {
       const result = await authService.login(loginEmail, loginPassword);
+      refetch();
       navigate(result.user.role === "admin" ? "/admin" : "/user");
     } catch (err) {
       setError(err.message);
@@ -33,8 +36,6 @@ export default function AuthSection() {
     e.preventDefault();
     setIsLoading(true);
     setError("");
-
-    console.log(registerName, registerEmail, registerPassword);
 
     try {
       await authService.register(registerName, registerEmail, registerPassword);
@@ -110,7 +111,10 @@ export default function AuthSection() {
 
                 <form onSubmit={handleLogin} className="space-y-4">
                   <div>
-                    <label htmlFor="loginEmail" className="block text-sm font-medium mb-1">
+                    <label
+                      htmlFor="loginEmail"
+                      className="block text-sm font-medium mb-1"
+                    >
                       Email
                     </label>
                     <input
@@ -126,7 +130,10 @@ export default function AuthSection() {
                   </div>
 
                   <div>
-                    <label htmlFor="loginPassword" className="block text-sm font-medium mb-1">
+                    <label
+                      htmlFor="loginPassword"
+                      className="block text-sm font-medium mb-1"
+                    >
                       Password
                     </label>
                     <input
@@ -178,7 +185,10 @@ export default function AuthSection() {
 
                 <form onSubmit={handleRegister} className="space-y-4">
                   <div>
-                    <label htmlFor="registerName" className="block text-sm font-medium mb-1">
+                    <label
+                      htmlFor="registerName"
+                      className="block text-sm font-medium mb-1"
+                    >
                       Full Name
                     </label>
                     <input
@@ -194,7 +204,10 @@ export default function AuthSection() {
                   </div>
 
                   <div>
-                    <label htmlFor="registerEmail" className="block text-sm font-medium mb-1">
+                    <label
+                      htmlFor="registerEmail"
+                      className="block text-sm font-medium mb-1"
+                    >
                       Email
                     </label>
                     <input
@@ -210,7 +223,10 @@ export default function AuthSection() {
                   </div>
 
                   <div>
-                    <label htmlFor="registerPassword" className="block text-sm font-medium mb-1">
+                    <label
+                      htmlFor="registerPassword"
+                      className="block text-sm font-medium mb-1"
+                    >
                       Password
                     </label>
                     <input
