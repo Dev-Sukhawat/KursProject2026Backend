@@ -1,23 +1,16 @@
 import express from "express";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
-import dotenv from 'dotenv';
-import path from 'path';
-import { fileURLToPath } from 'url';
 import { supabase } from "../config/supabaseClient.js";
 import logger from "../utils/logger.js";
+import { verifyToken, requireRole } from "../middleware/authMiddleware.js";
 
-const router = express.Router()
+const router = express.Router();
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-dotenv.config({ path: path.join(__dirname, "../.env") });
-
-const supabaseJWT = process.env.SUPABASE_JWT_SECRET
+const supabaseJWT = process.env.SUPABASE_JWT_SECRET;
 
 // ==========================================
-// AUTH & USERS (Create & Read)
+// AUTH (Register & Login)
 // ==========================================
 
 router.post("/register", async (req, res) => {
@@ -41,7 +34,7 @@ router.post("/register", async (req, res) => {
 
         if (existingUser) {
             logger.warn(`Register failed - email already exists: ${formattedEmail}`);
-            return res.status(409).json({ error: "A user with this email already exists" })
+            return res.status(409).json({ error: "A user with this email already exists" });
         }
 
         const saltRounds = 10;
@@ -68,10 +61,11 @@ router.post("/register", async (req, res) => {
         logger.error(`Register failed - ${error.message}`);
         res.status(500).json({ error: error.message });
     }
-})
+});
 
 router.post("/login", async (req, res) => {
     const { email, password } = req.body;
+
     if (!email || !password) {
         logger.warn("Login attempt with missing fields");
         return res.status(400).json({ error: "All fields are required" });
@@ -114,7 +108,7 @@ router.post("/login", async (req, res) => {
 // ==========================================
 // Profiles (Users) CRUD
 // ==========================================
-router.get("/users", async (req, res) => {
+router.get("/users", verifyToken, async (req, res) => {
     try {
         const { data, error } = await supabase
             .from('profiles')

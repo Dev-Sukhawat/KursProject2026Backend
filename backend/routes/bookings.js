@@ -3,6 +3,7 @@ import { supabase } from "../config/supabaseClient.js";
 import logger from "../utils/logger.js";
 import { io} from "../server.js";
 import cache from "../config/cache.js";
+import { verifyToken, requireRole } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
@@ -11,7 +12,7 @@ const router = express.Router();
 // ==========================================
 
 // READ ALL
-router.get("/", async (req, res) => {
+router.get("/", verifyToken, async (req, res) => {
     try {
         const cachedBookings = cache.get("bookings");
         if (cachedBookings) {
@@ -53,7 +54,7 @@ router.get("/", async (req, res) => {
 });
 
 // CREATE BOOKING
-router.post("/", async (req, res) => {
+router.post("/", verifyToken, async (req, res) => {
     const { user_id, room_id, start_date, end_date } = req.body;
     try {
         const { data, error } = await supabase
@@ -105,7 +106,7 @@ router.post("/", async (req, res) => {
 });
 
 // Read specific booking
-router.get("/availability", async (req, res) => {
+router.get("/availability", verifyToken, async (req, res) => {
     const { roomId, startDate, endDate, excludeId } = req.query;
 
     if (!roomId || !startDate || !endDate) {
@@ -143,7 +144,7 @@ router.get("/availability", async (req, res) => {
 });
 
 // READ specific booking via ID
-router.get("/:userId", async (req, res) => {
+router.get("/:userId", verifyToken, async (req, res) => {
     const { userId } = req.params;
     try {
         const { data, error } = await supabase
@@ -181,7 +182,7 @@ router.get("/:userId", async (req, res) => {
 });
 
 // UPDATE BOOKING
-router.put("/:id", async (req, res) => {
+router.put("/:id", verifyToken, async (req, res) => {
     const { id } = req.params;
     const updates = req.body;
 
@@ -212,7 +213,7 @@ router.put("/:id", async (req, res) => {
 });
 
 // DELETE BOOKING
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", verifyToken, async (req, res) => {
     const { id } = req.params;
     try {
         const { error } = await supabase.from('bookings').delete().eq('id', id);

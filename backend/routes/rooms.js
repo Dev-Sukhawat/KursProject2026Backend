@@ -3,7 +3,7 @@ import { supabase } from "../config/supabaseClient.js";
 import logger from "../utils/logger.js";
 import {io} from "../server.js";
 import cache from "../config/cache.js";
-
+import { verifyToken, requireRole } from "../middleware/authMiddleware.js";
 const router = express.Router();
 
 // ==========================================
@@ -11,7 +11,7 @@ const router = express.Router();
 // ==========================================
 
 // READ ALL
-router.get("/", async (req, res) => {
+router.get("/", verifyToken, async (req, res) => {
     try {
         const cachedRooms = cache.get("rooms");
         if (cachedRooms) {
@@ -34,7 +34,7 @@ router.get("/", async (req, res) => {
 });
 
 // CREATE ROOM
-router.post("/", async (req, res) => {
+router.post("/", verifyToken, async (req, res) => {
     const { name, type, capacity, available } = req.body;
     try {
         const { data, error } = await supabase
@@ -57,7 +57,7 @@ router.post("/", async (req, res) => {
 });
 
 // UPDATE ROOM
-router.put("/:id", async (req, res) => {
+router.put("/:id", verifyToken, async (req, res) => {
     const { id } = req.params;
     const updates = req.body;
     try {
@@ -78,7 +78,7 @@ router.put("/:id", async (req, res) => {
 });
 
 // DELETE ROOM
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", verifyToken, async (req, res) => {
     const { id } = req.params;
     try {
         const { error } = await supabase
